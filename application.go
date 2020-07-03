@@ -32,7 +32,7 @@ func main() {
 	}
 	instruments := router.Group("/instruments")
 	{
-		instruments.GET("/", instrumentsHandler)
+		instruments.GET("", instrumentsHandler)
 	}
 	log.Fatal(router.Run(":5000"))
 }
