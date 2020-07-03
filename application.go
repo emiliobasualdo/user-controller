@@ -45,7 +45,7 @@ func statusHandler(c *gin.Context) {
 }
 
 func loginHandler(c *gin.Context) {
-	profile := UserProfile{"Adolfo", "Olivera", "5491133071114"}
+	profile := UserProfile{"Adolfo", "Oliverrrrr", "5491133071114"}
 	c.JSON(http.StatusOK, profile)
 	return
 }
