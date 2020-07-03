@@ -22,15 +22,15 @@ func main() {
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
 	router := gin.Default()
-	root := router.Group("/")
+	root := router.Group("")
 	{
 		root.GET("", statusHandler)
 	}
-	auth := router.Group("/auth")
+	auth := router.Group("auth")
 	{
-		auth.POST("/login", loginHandler)
+		auth.POST("login", loginHandler)
 	}
-	instruments := router.Group("/instruments")
+	instruments := router.Group("instruments")
 	{
 		instruments.GET("", instrumentsHandler)
 	}
