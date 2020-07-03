@@ -24,7 +24,7 @@ func main() {
 	router := gin.Default()
 	root := router.Group("/")
 	{
-		root.GET("/", statusHandler)
+		root.GET("", statusHandler)
 	}
 	auth := router.Group("/auth")
 	{
