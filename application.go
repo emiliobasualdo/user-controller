@@ -30,7 +30,7 @@ func main() {
 	{
 		auth.POST("/login", loginHandler)
 	}
-	instruments := router.Group("/ls")
+	instruments := router.Group("/instruments")
 	{
 		instruments.GET("/", instrumentsHandler)
 	}
