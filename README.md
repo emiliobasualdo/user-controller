@@ -10,7 +10,7 @@ The ecosystem is based on [this](https://www.usenix.org/legacy/publications/libr
 This controller only representes the wallet-controller module.
 
 # Controller structure
-![Controller Structure](https://www.dropbox.com/s/xkc08v9jn327zoh/Screen%20Shot%202020-07-04%20at%2014.50.25%20copy.png?dl=0)
+![Controller Structure](https://srv-file6.gofile.io/download/t8uEcz/Screen%20Shot%202020-07-04%20at%2014.50.25%20copy.png)
 # Setup Wallet Controller
 ```
 $ git clone git clone https://bitbucket.org/mas-simple/wallet-controller.git
