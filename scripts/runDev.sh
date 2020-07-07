@@ -1,1 +1,1 @@
-reflex -sr '.*.go' go run main.go
+reflex -sr '.*.go' go run application.go

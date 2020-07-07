@@ -26,7 +26,7 @@ $ go run application.go
 ### Run with auto-rebuild
 ```
 $ go get github.com/cespare/reflex
-$ reflex -sr '.*.go' go run main.go
+$ reflex -sr '.*.go' go run application.go
 ```
 or
 ```
