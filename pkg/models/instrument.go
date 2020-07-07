@@ -3,36 +3,16 @@ package models
 import "time"
 
 type Instrument struct {
-	ID            	uint		`json:"id" gorm:"primary_key"`
-	AccountID		uint		`json:"accountId"`
-	Holder    		string		`json:"holder"`
-	LastFourNumbers string		`json:"lastFourNumbers"`
-	ValidThru 		string		`json:"validThru"`
-	Issuer	 		string		`json:"issuer"` // banco itaú
-	PPS 			string		`json:"pps"`// visa o amex o mc
-	CreditType 		string		`json:"creditType"`
-	CreatedAt     	time.Time	`json:"createdAt"`
-	DisabledAt		time.Time	`json:"-"`// we dont export this field
-}
-
-type InstrumentDto struct {
-	AccountID		uint		`json:"accountId"`
-	Holder    		string		`json:"holder"`
-	LastFourNumbers string		`json:"lastFourNumbers"`
-	ValidThru 		string		`json:"validThru"`
-	Issuer	 		string		`json:"issuer"`
-	PPS 			string		`json:"pps"`
-	CreditType 		string		`json:"creditType"`
-}
-
-func (dto InstrumentDto) Builder() InstrumentBuilder{
-	return New().
-		CreditType(dto.CreditType).
-		Holder(dto.Holder).
-		Issuer(dto.Issuer).
-		LastFourNumbers(dto.LastFourNumbers).
-		PPS(dto.PPS).
-		ValidThru(dto.ValidThru)
+	ID            	uint		`json:"id" gorm:"primary_key" example:"1"`
+	AccountID		uint		`json:"accountId" example:"3"`
+	Holder    		string		`json:"holder" example:"José Pepe Argento"`
+	LastFourNumbers string		`json:"lastFourNumbers" example:"4930"`
+	ValidThru 		string		`json:"validThru" example:"11/24"`
+	Issuer	 		string		`json:"issuer" example:"Banco Itaú"`
+	PPS 			string		`json:"pps" example:"VISA" enums:"VISA, AMEX, MC"`
+	CreditType 		string		`json:"creditType" example:"DEBIT" enums:"DEBIT, CREDIT, PREPAID"`
+	CreatedAt     	time.Time	`json:"createdAt" example:"2020-07-07 13:36:15.738848+02:00"`
+	DisabledAt		time.Time	`json:"-"` // we dont export this field
 }
 
 type InstrumentBuilder interface {
@@ -102,8 +82,6 @@ func (ib *auxBuilder) Build() Instrument {
 		CreditType:      ib.creditType,
 	}
 }
-
-
 
 func New() InstrumentBuilder {
 	return &auxBuilder{}

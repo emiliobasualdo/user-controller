@@ -1,0 +1,351 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the main server where wallet operations for the Más Simple Wallet will be received",
+        "title": "Más Simple Wallet-Controller API",
+        "contact": {
+            "name": "API Support",
+            "email": "ebasualdo@itba.edu.ar"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "paths": {
+        "/login": {
+            "post": {
+                "description": "Return the user given the provided phone number",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Login",
+                "operationId": "Get User",
+                "parameters": [
+                    {
+                        "description": "user's phone number",
+                        "name": "phoneNumber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.PhoneNumber"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Account"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The phone number provided is illegal",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": " \"id does not exist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/me/instruments/{id}": {
+            "get": {
+                "description": "Returns a list of the available instruments uploaded by the client",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get available Instruments",
+                "operationId": "Get Instruments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id of the user that requests the instruments",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Instrument"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The id provided is illegal",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": " \"id does not exist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Inserts and instrument to the list of available user instruments\nReturn the instrument object with its id",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Inserts instrument",
+                "operationId": "Insert instrument",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id of the user that requests the instruments",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Instrument to insert",
+                        "name": "instrument",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.InstrumentDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Instrument"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The id provided is illegal",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "id does not exist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes one of the instruments available to the user",
+                "produces": [
+                    "text/plain"
+                ],
+                "summary": "Delete an Instrument",
+                "operationId": "Delete Instruments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id of the instrument to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Card deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": " \"The id provided is illegal",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": " \"id does not exist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dtos.InstrumentDto": {
+            "type": "object",
+            "properties": {
+                "creditType": {
+                    "type": "string",
+                    "enum": [
+                        "DEBIT",
+                        " CREDIT",
+                        " PREPAID"
+                    ],
+                    "example": "DEBIT"
+                },
+                "holder": {
+                    "type": "string",
+                    "example": "José Pepe Argento"
+                },
+                "issuer": {
+                    "type": "string",
+                    "example": "Banco Itaú"
+                },
+                "lastFourNumbers": {
+                    "type": "string",
+                    "example": "4930"
+                },
+                "pps": {
+                    "type": "string",
+                    "enum": [
+                        "VISA",
+                        " AMEX",
+                        " MC"
+                    ],
+                    "example": "VISA"
+                },
+                "validThru": {
+                    "type": "string",
+                    "example": "11/24"
+                }
+            }
+        },
+        "handlers.PhoneNumber": {
+            "type": "object",
+            "properties": {
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "+5491133071114"
+                }
+            }
+        },
+        "models.Account": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number",
+                    "example": 5430.54
+                },
+                "beneficiaries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Beneficiary"
+                    }
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2020-07-07T11:38:09.157803072Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "instruments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Instrument"
+                    }
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Potrelli de Argento"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Mónica"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "+5491133071114"
+                }
+            }
+        },
+        "models.Beneficiary": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "integer",
+                    "example": 8
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Argento"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Alfio Coqui"
+                }
+            }
+        },
+        "models.Instrument": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2020-07-07 13:36:15.738848+02:00"
+                },
+                "creditType": {
+                    "type": "string",
+                    "enum": [
+                        "DEBIT",
+                        " CREDIT",
+                        " PREPAID"
+                    ],
+                    "example": "DEBIT"
+                },
+                "holder": {
+                    "type": "string",
+                    "example": "José Pepe Argento"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "issuer": {
+                    "type": "string",
+                    "example": "Banco Itaú"
+                },
+                "lastFourNumbers": {
+                    "type": "string",
+                    "example": "4930"
+                },
+                "pps": {
+                    "type": "string",
+                    "enum": [
+                        "VISA",
+                        " AMEX",
+                        " MC"
+                    ],
+                    "example": "VISA"
+                },
+                "validThru": {
+                    "type": "string",
+                    "example": "11/24"
+                }
+            }
+        }
+    }
+}

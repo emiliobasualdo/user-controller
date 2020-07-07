@@ -1,0 +1,246 @@
+basePath: /
+definitions:
+  dtos.InstrumentDto:
+    properties:
+      creditType:
+        enum:
+        - DEBIT
+        - ' CREDIT'
+        - ' PREPAID'
+        example: DEBIT
+        type: string
+      holder:
+        example: José Pepe Argento
+        type: string
+      issuer:
+        example: Banco Itaú
+        type: string
+      lastFourNumbers:
+        example: "4930"
+        type: string
+      pps:
+        enum:
+        - VISA
+        - ' AMEX'
+        - ' MC'
+        example: VISA
+        type: string
+      validThru:
+        example: 11/24
+        type: string
+    type: object
+  handlers.PhoneNumber:
+    properties:
+      phoneNumber:
+        example: "+5491133071114"
+        type: string
+    type: object
+  models.Account:
+    properties:
+      balance:
+        example: 5430.54
+        type: number
+      beneficiaries:
+        items:
+          $ref: '#/definitions/models.Beneficiary'
+        type: array
+      createdAt:
+        example: "2020-07-07T11:38:09.157803072Z"
+        type: string
+      id:
+        example: 5
+        type: integer
+      instruments:
+        items:
+          $ref: '#/definitions/models.Instrument'
+        type: array
+      lastName:
+        example: Potrelli de Argento
+        type: string
+      name:
+        example: Mónica
+        type: string
+      phoneNumber:
+        example: "+5491133071114"
+        type: string
+    type: object
+  models.Beneficiary:
+    properties:
+      accountId:
+        example: 8
+        type: integer
+      lastName:
+        example: Argento
+        type: string
+      name:
+        example: Alfio Coqui
+        type: string
+    type: object
+  models.Instrument:
+    properties:
+      accountId:
+        example: 3
+        type: integer
+      createdAt:
+        example: 2020-07-07 13:36:15.738848+02:00
+        type: string
+      creditType:
+        enum:
+        - DEBIT
+        - ' CREDIT'
+        - ' PREPAID'
+        example: DEBIT
+        type: string
+      holder:
+        example: José Pepe Argento
+        type: string
+      id:
+        example: 1
+        type: integer
+      issuer:
+        example: Banco Itaú
+        type: string
+      lastFourNumbers:
+        example: "4930"
+        type: string
+      pps:
+        enum:
+        - VISA
+        - ' AMEX'
+        - ' MC'
+        example: VISA
+        type: string
+      validThru:
+        example: 11/24
+        type: string
+    type: object
+host: localhost:5000
+info:
+  contact:
+    email: ebasualdo@itba.edu.ar
+    name: API Support
+  description: This is the main server where wallet operations for the Más Simple Wallet will be received
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Más Simple Wallet-Controller API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      description: Return the user given the provided phone number
+      operationId: Get User
+      parameters:
+      - description: user's phone number
+        in: body
+        name: phoneNumber
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.PhoneNumber'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Account'
+            type: array
+        "400":
+          description: The phone number provided is illegal
+          schema:
+            type: string
+        "404":
+          description: ' "id does not exist'
+          schema:
+            type: string
+      summary: Login
+  /me/instruments/{id}:
+    delete:
+      description: Deletes one of the instruments available to the user
+      operationId: Delete Instruments
+      parameters:
+      - description: Id of the instrument to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Card deleted
+          schema:
+            type: string
+        "400":
+          description: ' "The id provided is illegal'
+          schema:
+            type: string
+        "404":
+          description: ' "id does not exist'
+          schema:
+            type: string
+      summary: Delete an Instrument
+    get:
+      description: Returns a list of the available instruments uploaded by the client
+      operationId: Get Instruments
+      parameters:
+      - description: Id of the user that requests the instruments
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Instrument'
+            type: array
+        "400":
+          description: The id provided is illegal
+          schema:
+            type: string
+        "404":
+          description: ' "id does not exist'
+          schema:
+            type: string
+      summary: Get available Instruments
+    post:
+      description: |-
+        Inserts and instrument to the list of available user instruments
+        Return the instrument object with its id
+      operationId: Insert instrument
+      parameters:
+      - description: Id of the user that requests the instruments
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Instrument to insert
+        in: body
+        name: instrument
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.InstrumentDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Instrument'
+            type: array
+        "400":
+          description: The id provided is illegal
+          schema:
+            type: string
+        "404":
+          description: id does not exist
+          schema:
+            type: string
+      summary: Inserts instrument
+swagger: "2.0"

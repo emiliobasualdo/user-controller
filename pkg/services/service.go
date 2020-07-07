@@ -6,10 +6,8 @@ import (
 	"time"
 )
 
-func GetAccount(login Login) Account {
-	acc := Account{
-		PhoneNumber: login.PhoneNumber,
-	}
+func GetAccount(phoneNumber string) Account {
+	acc := Account{PhoneNumber: phoneNumber}
 	return persistence.GetAccountByPhoneNumberOrCreate(acc)
 }
 
@@ -23,7 +21,7 @@ func GetInstrumentsById(id uint) ([]Instrument, error) {
 		return nil, err
 	}
 	// we remove disabled instruments
-	var resp []Instrument
+	resp := make([]Instrument, 0)
 	for _, inst := range insts {
 		if inst.DisabledAt.IsZero() {
 			resp = append(resp, inst)
@@ -32,9 +30,8 @@ func GetInstrumentsById(id uint) ([]Instrument, error) {
 	return resp, nil
 }
 
-func InsertInstrumentById(instrumentDto InstrumentDto) (Instrument, error) {
-	instrument := instrumentDto.Builder().Build()
-	return persistence.CreateInstrument(instrumentDto.AccountID, instrument)
+func InsertInstrumentById(accId uint, instrument Instrument) (Instrument, error) {
+	return persistence.CreateInstrument(accId, instrument)
 }
 
 func DeleteInstrumentById(instrumentId uint) error {

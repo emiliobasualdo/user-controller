@@ -1,1 +1,1 @@
-reflex -sr '.*.go' go run application.go
+reflex -sr '.*.go' -G 'docs/*' sh scripts/updateDocAndRun.sh

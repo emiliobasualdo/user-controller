@@ -26,11 +26,14 @@ $ go run application.go
 ### Run with auto-rebuild
 ```
 $ go get github.com/cespare/reflex
-$ reflex -sr '.*.go' go run application.go
+```
+and
+```
+$ sh scripts/runDev.sh
 ```
 or
 ```
-$ sh scripts/runDev.sh
+$ sh scripts/run.sh
 ```
 
 ## Deploy a current eb environment
