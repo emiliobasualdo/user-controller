@@ -41,10 +41,10 @@ func Serve(_log *logger.Logger) {
 		}
 	}
 	// swagger docs
-	url := ginSwagger.URL("http://localhost:5000/api-doc/doc.json") // The url pointing to API definition
+	//url := ginSwagger.URL("http://localhost:5000/api-doc/doc.json") // The url pointing to API definition
 	router.GET("/api-doc/*any", func(context *gin.Context) {
 		docs.SwaggerInfo.Host = context.Request.Host
-		ginSwagger.WrapHandler(swaggerFiles.Handler, url)(context)
+		ginSwagger.WrapHandler(swaggerFiles.Handler)(context)
 	})
 
 	if err := router.Run(":"+PORT); err != nil {
