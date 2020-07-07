@@ -35,14 +35,13 @@ $ sh scripts/runDev.sh
 
 ## Deploy a current eb environment
 ```
-$ git commit ..... # eb solo deploya lo que esté commiteado
+$ git commit ..... # eb only deploys commited code
 $ eb deploy
 ```
 
-## Para interesados
-### Cómo levantar un beanstalk: 
+### For interested people; How to start a beanstalk?:
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/go-getstarted.html
-1) meter código en application.go
+1) Create an app in application.go // beanstalk only start code in application.go 
 2) `eb init`
 3) `eb deploy`
 
