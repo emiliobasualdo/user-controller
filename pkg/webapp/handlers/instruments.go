@@ -33,7 +33,7 @@ func GetInstrumentsHandler(c *gin.Context) {
 	Respond(c, http.StatusOK, instruments, nil)
 }
 
-// @Summary Inserts instrument
+// @Summary Insert instrument
 // @Description Inserts and instrument to the list of available user instruments
 // @Description Return the instrument object with its id
 // @ID Insert instrument

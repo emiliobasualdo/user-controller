@@ -121,7 +121,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Inserts instrument",
+                "summary": "Insert instrument",
                 "operationId": "Insert instrument",
                 "parameters": [
                     {

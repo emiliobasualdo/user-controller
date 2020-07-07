@@ -242,5 +242,5 @@ paths:
           description: id does not exist
           schema:
             type: string
-      summary: Inserts instrument
+      summary: Insert instrument
 swagger: "2.0"

@@ -3,9 +3,6 @@ package webapp
 import (
 	"github.com/apsdehal/go-logger"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
-	docs "massimple.com/wallet-controller/docs"
 	. "massimple.com/wallet-controller/pkg/webapp/handlers"
 )
 
@@ -41,11 +38,7 @@ func Serve(_log *logger.Logger) {
 		}
 	}
 	// swagger docs
-	//url := ginSwagger.URL("http://localhost:5000/api-doc/doc.json") // The url pointing to API definition
-	router.GET("/api-doc/*any", func(context *gin.Context) {
-		docs.SwaggerInfo.Host = context.Request.Host
-		ginSwagger.WrapHandler(swaggerFiles.Handler)(context)
-	})
+	router.GET("/api-doc/*any", SwaggerHandler)
 
 	if err := router.Run(":"+PORT); err != nil {
 		panic(err)
