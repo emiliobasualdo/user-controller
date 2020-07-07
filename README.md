@@ -43,7 +43,7 @@ $ eb deploy
 ### Cómo levantar un beanstalk: 
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/go-getstarted.html
 1) meter código en application.go
-2) eb init
-3) eb deploy
+2) `eb init`
+3) `eb deploy`
 
 - eb open // open the current env endpoint url
