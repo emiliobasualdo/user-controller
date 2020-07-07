@@ -71,6 +71,7 @@ func statusHandler(c *gin.Context) {
 	respond(c, http.StatusOK, gin.H{
 		"status":  "ok",
 		"version": "v1",
+		"host": c.Request.Host,
 	}, nil)
 }
 

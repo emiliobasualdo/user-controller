@@ -25,7 +25,7 @@ func GetInstrumentsById(id uint) ([]Instrument, error) {
 	// we remove disabled instruments
 	var resp []Instrument
 	for _, inst := range insts {
-		if !inst.DisabledAt.IsZero() {
+		if inst.DisabledAt.IsZero() {
 			resp = append(resp, inst)
 		}
 	}
