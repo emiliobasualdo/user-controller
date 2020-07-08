@@ -12,3 +12,9 @@ package webapp
 
 // @host localhost:5000
 // @BasePath /
+
+// @securityDefinitions.apikey JWT-Bearer
+// @in header
+// @name Authorization
+// @tokenUrl https://example.com/oauth/token
+// @authorizationurl https://example.com/oauth/authorize

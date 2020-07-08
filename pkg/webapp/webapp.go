@@ -15,20 +15,26 @@ func Serve(_log *logger.Logger) {
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
 	router := gin.Default()
+	authMiddleware, err := AuthMiddleware()
+	if err != nil {
+		panic(err)
+	}
 	health := router.Group("/")
 	{
 		health.GET("", StatusHandler)
 	}
-	auth := router.Group("/login")
+	auth := router.Group("/auth")
+	auth.POST("/sms-code", SendSmsHandler)
+	auth.POST("/login", authMiddleware.LoginHandler)
+	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+
+	me := router.Group("/me", authMiddleware.MiddlewareFunc())
 	{
-		auth.POST("/", LoginHandler)
-	}
-	me := router.Group("/me")
-	{
+		me.GET("/", MeHandler)
 		instruments := me.Group("/instruments")
 		{
-			instruments.GET("/:id", GetInstrumentsHandler)
-			instruments.POST("/:id", InsertInstrumentsHandler)
+			instruments.GET("/", GetInstrumentsHandler)
+			instruments.POST("/", InsertInstrumentsHandler)
 			instruments.DELETE("/:id", DeleteInstrumentsHandler)
 		}
 		transactions := me.Group("/transactions")

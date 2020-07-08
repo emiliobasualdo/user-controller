@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/appleboy/gin-jwt/v2 v2.6.3
 	github.com/apsdehal/go-logger v0.0.0-20190515212710-b0d6ccfee0e6
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect

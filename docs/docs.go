@@ -31,22 +31,22 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
+        "/auth/login": {
             "post": {
-                "description": "Return the user given the provided phone number",
+                "description": "Returns a jwt token to use as authentication",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Login",
+                "summary": "Generate a jwt",
                 "operationId": "Get User",
                 "parameters": [
                     {
-                        "description": "user's phone number",
-                        "name": "phoneNumber",
+                        "description": "user's phone number and the received sms code",
+                        "name": "login",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.PhoneNumber"
+                            "$ref": "#/definitions/dtos.LoginDto"
                         }
                     }
                 ],
@@ -54,14 +54,11 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Account"
-                            }
+                            "$ref": "#/definitions/dtos.TokenDto"
                         }
                     },
                     "400": {
-                        "description": "The phone number provided is illegal",
+                        "description": "The phone number does not match the code",
                         "schema": {
                             "type": "string"
                         }
@@ -75,7 +72,34 @@ var doc = `{
                 }
             }
         },
-        "/me/instruments/{id}": {
+        "/auth/sms-code": {
+            "post": {
+                "description": "Sends an sms to the specified phonenumber",
+                "summary": "SMS auth",
+                "operationId": "Get User",
+                "parameters": [
+                    {
+                        "description": "user's phone number",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.PhoneNumberDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {
+                        "description": "Something went wrong",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/me": {
             "get": {
                 "description": "Returns a list of the available instruments uploaded by the client",
                 "produces": [
@@ -83,15 +107,45 @@ var doc = `{
                 ],
                 "summary": "Get available Instruments",
                 "operationId": "Get Instruments",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Id of the user that requests the instruments",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Account"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Illegal token",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": " \"no such user",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
+                }
+            }
+        },
+        "/me/instruments": {
+            "get": {
+                "description": "Returns a list of the available instruments uploaded by the client",
+                "produces": [
+                    "application/json"
                 ],
+                "summary": "Get available Instruments",
+                "operationId": "Get Instruments",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -103,13 +157,13 @@ var doc = `{
                         }
                     },
                     "400": {
-                        "description": "The id provided is illegal",
+                        "description": "Illegal token",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "404": {
-                        "description": " \"id does not exist",
+                        "description": " \"no such user",
                         "schema": {
                             "type": "string"
                         }
@@ -164,7 +218,9 @@ var doc = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/me/instruments/{id}": {
             "delete": {
                 "description": "Deletes one of the instruments available to the user",
                 "produces": [
@@ -244,12 +300,42 @@ var doc = `{
                 }
             }
         },
-        "handlers.PhoneNumber": {
+        "dtos.LoginDto": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "123654"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "+5491133071114"
+                }
+            }
+        },
+        "dtos.PhoneNumberDto": {
             "type": "object",
             "properties": {
                 "phoneNumber": {
                     "type": "string",
                     "example": "+5491133071114"
+                }
+            }
+        },
+        "dtos.TokenDto": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "expire": {
+                    "type": "string",
+                    "example": "2020-07-08T15:58:45+02:00"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQyMTY3MjUsIm9yaWdfaWF0IjoxNTk0MjEzMTI1fQ.tWsDdREGVc2dPW7ZrcsoastWqfZm0s0w-oy6w0jH7YI"
                 }
             }
         },
@@ -361,6 +447,13 @@ var doc = `{
                     "example": "11/24"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "JWT-Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

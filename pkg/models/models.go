@@ -12,6 +12,7 @@ type Account struct {
 	Instruments   []Instrument  `json:"instruments" gorm:"foreignkey:AccountID"`
 	Beneficiaries []Beneficiary `json:"beneficiaries"`
 	Balance       float64       `json:"balance" example:"5430.54"`
+	DisabledSince time.Time     `json:"-"`
 	CreatedAt     time.Time     `json:"createdAt" example:"2020-07-07T11:38:09.157803072Z"`
 	UpdatedAt     time.Time     `json:"-"`
 }

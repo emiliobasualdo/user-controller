@@ -7,6 +7,13 @@ import (
 	. "massimple.com/wallet-controller/pkg/models"
 )
 
+var tables = []struct {
+	TableName  	string
+	Model 		interface{}
+}{
+	{"accounts", &Account{}},
+	{"instruments", &Instrument{}},
+}
 var db *gorm.DB
 var log *logger.Logger
 func Init(_log *logger.Logger) {
@@ -18,18 +25,22 @@ func Init(_log *logger.Logger) {
 	log.Info("Db connected")
 	db = _db
 	db.LogMode(true)
-	db.Table("accounts").CreateTable(&Account{})
-	db.Table("instruments").CreateTable(&Instrument{})
+	for _, table := range tables {
+		db.Table(table.TableName).CreateTable(table.Model)
+		db.AutoMigrate(table.Model)
+	}
 }
 
-func GetAccountByPhoneNumberOrCreate(query Account) Account {
+func GetAccountByPhoneNumberOrCreate(query Account) (Account, error) {
 	account, err := getByPhoneNumber(query)
 	if err == gorm.ErrRecordNotFound {
 		account = query
-		db.Create(&account)
+		if err := db.Create(&account).Error; err != nil {
+			return Account{}, err
+		}
 		log.InfoF("Creating user with phone number: %s", account.PhoneNumber)
 	}
-	return account
+	return account, nil
 }
 
 func getByPhoneNumber(query Account) (Account, error) {

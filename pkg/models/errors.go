@@ -19,3 +19,11 @@ type NoSuchInstrumentError struct {
 func (e *NoSuchInstrumentError) Error() string {
 	return fmt.Sprintf("No such instrument with id %d", e.ID)
 }
+
+type UnauthorizedError struct {
+	Message string
+}
+
+func (e *UnauthorizedError) Error() string {
+	return fmt.Sprint(e.Message)
+}

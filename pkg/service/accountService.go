@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	. "massimple.com/wallet-controller/pkg/models"
@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-func GetAccount(phoneNumber string) Account {
+func GetAccount(phoneNumber string) (Account, error) {
 	acc := Account{PhoneNumber: phoneNumber}
 	return persistence.GetAccountByPhoneNumberOrCreate(acc)
 }
 
-func getAccountById(id uint) (Account, error) {
+func GetAccountById(id uint) (Account, error) {
 	return persistence.GetAccountById(id)
 }
 
@@ -34,10 +34,13 @@ func InsertInstrumentById(accId uint, instrument Instrument) (Instrument, error)
 	return persistence.CreateInstrument(accId, instrument)
 }
 
-func DeleteInstrumentById(instrumentId uint) error {
+func DeleteInstrumentById(accountId uint, instrumentId uint) error {
 	inst, err := persistence.GetInstrumentsById(instrumentId)
 	if err != nil {
 		return err
+	}
+	if inst.AccountID != accountId {
+		return &UnauthorizedError{Message: "The instrument does not belong to the user"}
 	}
 	if inst.DisabledAt.IsZero() {
 		inst.DisabledAt = time.Now()

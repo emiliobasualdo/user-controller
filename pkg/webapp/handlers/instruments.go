@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"massimple.com/wallet-controller/pkg/services"
+	. "massimple.com/wallet-controller/pkg/models"
+	"massimple.com/wallet-controller/pkg/service"
 	. "massimple.com/wallet-controller/pkg/webapp/dtos"
 	. "massimple.com/wallet-controller/pkg/webapp/utils"
 	"net/http"
@@ -13,19 +14,17 @@ import (
 // @Description Returns a list of the available instruments uploaded by the client
 // @ID Get Instruments
 // @Produce  json
-// @Param   id     path    uint     true    "Id of the user that requests the instruments"
 // @Success 200 {array} models.Instrument
-// @Failure 400 {object} string "The id provided is illegal"
-// @Failure 404 {object} string "" "id does not exist"
-// @Router /me/instruments/{id} [get]
+// @Failure 400 {object} string "Illegal token"
+// @Failure 404 {object} string "" "no such user"
+// @Router /me/instruments [get]
 func GetInstrumentsHandler(c *gin.Context) {
-	_id := c.Param("id")
-	id, err := strconv.ParseUint(_id, 10, 64)
-	if err != nil {
+	jwtUser, exists := c.Get(IdentityKey)
+	if !exists {
 		Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
-	instruments, err := services.GetInstrumentsById(uint(id))
+	instruments, err := service.GetInstrumentsById(jwtUser.(*JwtUser).getId())
 	if err != nil {
 		Respond(c, http.StatusNotFound, nil, err)
 		return
@@ -43,12 +42,11 @@ func GetInstrumentsHandler(c *gin.Context) {
 // @Success 200 {array} models.Instrument
 // @Failure 400 {object} string "The id provided is illegal"
 // @Failure 404 {object} string "id does not exist"
-// @Router /me/instruments/{id} [post]
+// @Router /me/instruments [post]
 func InsertInstrumentsHandler(c *gin.Context) {
-	_id := c.Param("id")
-	id, err := strconv.ParseUint(_id, 10, 64)
-	if err != nil {
-		Respond(c, http.StatusBadRequest, "You must provide a user id", nil)
+	user, exists := c.Get(IdentityKey)
+	if !exists {
+		Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
 	var instrumentDto InstrumentDto
@@ -56,7 +54,7 @@ func InsertInstrumentsHandler(c *gin.Context) {
 		Respond(c, http.StatusBadRequest, "You must provide an complete instrument", nil)
 		return
 	}
-	instrument, err := services.InsertInstrumentById(uint(id), instrumentDto.Build())
+	instrument, err := service.InsertInstrumentById(user.(*JwtUser).getId(), instrumentDto.Build())
 	if err != nil {
 		Respond(c, http.StatusNotFound, nil, err)
 		return
@@ -74,13 +72,20 @@ func InsertInstrumentsHandler(c *gin.Context) {
 // @Failure 404 {object} string "" "id does not exist"
 // @Router /me/instruments/{id} [delete]
 func DeleteInstrumentsHandler(c *gin.Context) {
-	_id := c.Param("id")
-	id, err := strconv.ParseUint(_id, 10, 64)
-	if err != nil {
+	user, exists := c.Get(IdentityKey)
+	if !exists {
 		Respond(c, http.StatusBadRequest, nil, nil)
 		return
 	}
-	err = services.DeleteInstrumentById(uint(id))
+	instrumentId, err := strconv.ParseUint(c.Param("id"),10, 64)
+	if err != nil {
+		Respond(c, http.StatusBadRequest, nil, err)
+		return
+	}
+	err = service.DeleteInstrumentById(user.(*JwtUser).getId(), uint(instrumentId))
+	if err, ok := err.(*UnauthorizedError); ok {
+		Respond(c, http.StatusUnauthorized, nil, err)
+	}
 	if err != nil {
 		Respond(c, http.StatusNotFound, nil, err)
 		return
