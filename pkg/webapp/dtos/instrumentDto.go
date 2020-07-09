@@ -12,7 +12,7 @@ type InstrumentDto struct {
 }
 
 func (dto InstrumentDto) Builder() models.InstrumentBuilder{
-	return models.New().
+	return models.NewInstrumentBuilder().
 		CreditType(dto.CreditType).
 		Holder(dto.Holder).
 		Issuer(dto.Issuer).

@@ -13,6 +13,7 @@ import (
 )
 
 const IdentityKey = "acc_id"
+const Realm = "text-realm" // todo change based on env
 
 type JwtUser struct {
 	ID  string
@@ -31,6 +32,18 @@ func (jw JwtUser) getId() uint {
 	return uint(id)
 }
 
+func AuthMiddlewareWrapper() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user, exists := c.Get(IdentityKey)
+		if !exists {
+			c.String(http.StatusBadRequest, "broken jwt")
+			return
+		}
+		c.Keys[IdentityKey] = user
+		c.Next()
+	}
+}
+
 // @Summary Generate a jwt
 // @Description Returns a jwt token to use as authentication
 // @ID Get User
@@ -43,10 +56,10 @@ func (jw JwtUser) getId() uint {
 //https://github.com/appleboy/gin-jwt
 func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 	return jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "test zone",
+		Realm:       Realm,
 		Key:         []byte("asdfasdfasdfasfdasecret key"), // todo env
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
+		Timeout:     time.Until(time.Now().AddDate(1,0,0)),
+		MaxRefresh:  time.Until(time.Now().AddDate(1,1,0)),
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(JwtUser); ok {

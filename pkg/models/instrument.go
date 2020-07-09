@@ -26,7 +26,7 @@ type InstrumentBuilder interface {
 	Build() 				Instrument
 }
 
-type auxBuilder struct {
+type iBuilder struct {
 	account			uint
 	holder    		string
 	lastFourNumbers string
@@ -36,42 +36,42 @@ type auxBuilder struct {
 	creditType 		string
 }
 
-func (ib *auxBuilder) FromAccount(acc uint) InstrumentBuilder {
+func (ib *iBuilder) FromAccount(acc uint) InstrumentBuilder {
 	ib.account = acc
 	return ib
 }
 
-func (ib *auxBuilder) Holder(s string) InstrumentBuilder {
+func (ib *iBuilder) Holder(s string) InstrumentBuilder {
 	ib.holder = s
 	return ib
 }
 
-func (ib *auxBuilder) LastFourNumbers(s string) InstrumentBuilder {
+func (ib *iBuilder) LastFourNumbers(s string) InstrumentBuilder {
 	ib.lastFourNumbers = s
 	return ib
 }
 
-func (ib *auxBuilder) ValidThru(s string) InstrumentBuilder {
+func (ib *iBuilder) ValidThru(s string) InstrumentBuilder {
 	ib.validThru = s
 	return ib
 }
 
-func (ib *auxBuilder) Issuer(s string) InstrumentBuilder {
+func (ib *iBuilder) Issuer(s string) InstrumentBuilder {
 	ib.issuer = s
 	return ib
 }
 
-func (ib *auxBuilder) PPS(s string) InstrumentBuilder {
+func (ib *iBuilder) PPS(s string) InstrumentBuilder {
 	ib.pps = s
 	return ib
 }
 
-func (ib *auxBuilder) CreditType(s string) InstrumentBuilder {
+func (ib *iBuilder) CreditType(s string) InstrumentBuilder {
 	ib.creditType = s
 	return ib
 }
 
-func (ib *auxBuilder) Build() Instrument {
+func (ib *iBuilder) Build() Instrument {
 	return Instrument{
 		AccountID:       ib.account,
 		Holder:          ib.holder,
@@ -83,7 +83,7 @@ func (ib *auxBuilder) Build() Instrument {
 	}
 }
 
-func New() InstrumentBuilder {
-	return &auxBuilder{}
+func NewInstrumentBuilder() InstrumentBuilder {
+	return &iBuilder{}
 }
 

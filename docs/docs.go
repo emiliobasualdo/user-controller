@@ -258,6 +258,66 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/me/transactions": {
+            "get": {
+                "description": "Returns all time transactions history",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get transaction history",
+                "operationId": "Get transactions history",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Transaction"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No such user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Executes as transaction and returns its full details",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Execute transaction",
+                "operationId": "Execute transaction",
+                "parameters": [
+                    {
+                        "description": "Transaction to execute to insert",
+                        "name": "transaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.TransactionDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Transaction"
+                        }
+                    },
+                    "400": {
+                        "description": "The transaction provided is illegal",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -336,6 +396,23 @@ var doc = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQyMTY3MjUsIm9yaWdfaWF0IjoxNTk0MjEzMTI1fQ.tWsDdREGVc2dPW7ZrcsoastWqfZm0s0w-oy6w0jH7YI"
+                }
+            }
+        },
+        "dtos.TransactionDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 1504.56
+                },
+                "destinationAccountId": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "instrumentId": {
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
@@ -447,6 +524,35 @@ var doc = `{
                     "example": "11/24"
                 }
             }
+        },
+        "models.Transaction": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 1504.56
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2020-07-07 13:36:15.738848+02:00"
+                },
+                "destinationAccountId": {
+                    "type": "integer",
+                    "example": 19
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "instrumentId": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "originAccountId": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -474,7 +580,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "/",
 	Schemes:     []string{},
 	Title:       "Más Simple Wallet-Controller API",
-	Description: "This is the main server where wallet operations for the Más Simple Wallet will be received",
+	Description: "This is the main server where wallet transactions for the Más Simple Wallet will be received",
 }
 
 type s struct{}

@@ -1,7 +1,7 @@
 package persistence
 
 import (
-	"github.com/apsdehal/go-logger"
+	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	. "massimple.com/wallet-controller/pkg/models"
@@ -13,22 +13,7 @@ var tables = []struct {
 }{
 	{"accounts", &Account{}},
 	{"instruments", &Instrument{}},
-}
-var db *gorm.DB
-var log *logger.Logger
-func Init(_log *logger.Logger) {
-	log = _log
-	_db, err := gorm.Open("sqlite3", "test.db")
-	if err != nil {
-		panic(err)
-	}
-	log.Info("Db connected")
-	db = _db
-	db.LogMode(true)
-	for _, table := range tables {
-		db.Table(table.TableName).CreateTable(table.Model)
-		db.AutoMigrate(table.Model)
-	}
+	{"transactions", &Transaction{}},
 }
 
 func GetAccountByPhoneNumberOrCreate(query Account) (Account, error) {
@@ -68,6 +53,7 @@ func GetInstrumentsById(id uint) (Instrument, error) {
 	err := db.First(&inst, id).Error
 	return inst, err
 }
+
 func CreateInstrument(accountId uint, inst Instrument) (Instrument, error) {
 	acc, err := GetAccountById(accountId)
 	if err != nil {
@@ -92,4 +78,45 @@ func GetAccountById(id uint) (Account, error) {
 		return Account{}, &NoSuchAccountError{ID: id}
 	}
 	return acc, nil
+}
+
+func ExecuteTransaction(originAcc Account, destAcc Account, trans Transaction)  (Transaction, error){
+	// transaction start
+	tx := db.Begin()
+	// origin subtract balance
+	oErr := tx.Model(&originAcc).Update(Account{
+		Balance: originAcc.Balance - trans.Amount,
+	}).Error
+	// destination add balance
+	dErr := tx.Model(&destAcc).Update(Account{
+		Balance: destAcc.Balance + trans.Amount,
+	}).Error
+	// create new transaction
+	tErr := tx.Create(&trans).Error
+	// if any error -> rollback
+	if oErr != nil || dErr != nil || tErr != nil {
+		tx.Rollback()
+		return Transaction{}, pickFirstNonNil(oErr, dErr, tErr)
+	}
+	// commit
+	tx.Commit()
+	return trans, nil
+}
+
+func GetTransactions(accId uint) ([]Transaction, error){
+	var trans []Transaction
+	err := db.Order("created_at desc").Find(&trans).Where(Transaction{OriginAccountId: accId}).Error
+	if err != nil {
+		return nil, err
+	}
+	return trans, nil
+}
+
+func pickFirstNonNil(values ...error) error {
+	for _, val := range values {
+		if val != nil {
+			return val
+		}
+	}
+	return errors.New("unknown error")
 }

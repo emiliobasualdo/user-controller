@@ -15,7 +15,7 @@ func GetAccountById(id uint) (Account, error) {
 	return persistence.GetAccountById(id)
 }
 
-func GetInstrumentsById(id uint) ([]Instrument, error) {
+func GetEnabledInstrumentsByAccountId(id uint) ([]Instrument, error) {
 	insts, err := persistence.GetInstrumentsByAccountId(id)
 	if err != nil {
 		return nil, err
@@ -48,3 +48,60 @@ func DeleteInstrumentById(accountId uint, instrumentId uint) error {
 	}
 	return err
 }
+
+func ExecuteTransaction(originId uint, trans Transaction) (Transaction, error) {
+	// legal transaction
+	if trans.Amount <= 0 {
+		return Transaction{}, &IllegalTransactionError{Message: "The amount has to be bigger than 0"}
+	}
+	// origin exists
+	originAcc, err := GetAccountById(originId)
+	if err != nil {
+		return Transaction{}, err
+	}
+	// origin is enabled
+	if !originAcc.DisabledSince.IsZero() {
+		return Transaction{}, &DisabledAccountError{Message: "The origin account is disabled"}
+	}
+	// origin has enough balance
+	if originAcc.Balance < trans.Amount {
+		return Transaction{}, &NotEnoughCreditError{}
+	}
+	// instrument exists & belongs & is enabled
+	oInstruments, err := GetEnabledInstrumentsByAccountId(originAcc.ID)
+	if err != nil {
+		return Transaction{}, err
+	}
+	instrumentFound := false
+	for _, ins := range oInstruments {
+		if ins.ID == trans.InstrumentId {
+			instrumentFound = true
+			break
+		}
+	}
+	if !instrumentFound {
+		return Transaction{}, &NoSuchInstrumentError{ID: trans.InstrumentId}
+	}
+	// destination exists
+	destAcc, err := GetAccountById(trans.DestinationAccountId)
+	if err != nil {
+		return Transaction{}, err
+	}
+	// destination is enabled
+	if !destAcc.DisabledSince.IsZero() {
+		return Transaction{}, &DisabledAccountError{Message: "The destination account is disabled"}
+	}
+	// execute transaction
+	fullTransaction := Transaction{
+		Amount:               trans.Amount,
+		InstrumentId:         trans.InstrumentId,
+		OriginAccountId:      originAcc.ID,
+		DestinationAccountId: destAcc.ID,
+	}
+	return persistence.ExecuteTransaction(originAcc, destAcc, fullTransaction)
+}
+
+func GetTransactions(accId uint) ([]Transaction, error) {
+	return persistence.GetTransactions(accId)
+}
+

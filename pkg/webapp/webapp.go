@@ -27,8 +27,7 @@ func Serve(_log *logger.Logger) {
 	auth.POST("/sms-code", SendSmsHandler)
 	auth.POST("/login", authMiddleware.LoginHandler)
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
-
-	me := router.Group("/me", authMiddleware.MiddlewareFunc())
+	me := router.Group("/me", authMiddleware.MiddlewareFunc(), AuthMiddlewareWrapper())
 	{
 		me.GET("/", MeHandler)
 		instruments := me.Group("/instruments")
@@ -39,8 +38,8 @@ func Serve(_log *logger.Logger) {
 		}
 		transactions := me.Group("/transactions")
 		{
-			transactions.GET("/", ExecutionHandler)
-			transactions.POST("/", ExecutionHandler)
+			transactions.GET("/", TransactionHistoryHandler)
+			transactions.POST("/", NewTransactionHandler)
 		}
 	}
 	// swagger docs

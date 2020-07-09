@@ -17,11 +17,7 @@ import (
 // @Failure 404 {object} string "" "no such user"
 // @Router /me [get]
 func MeHandler(c *gin.Context)  {
-	user, exists := c.Get(IdentityKey)
-	if !exists {
-		Respond(c, http.StatusBadRequest, nil, nil)
-		return
-	}
+	user, _ := c.Get(IdentityKey)
 	acc, err := service.GetAccountById(user.(*JwtUser).getId())
 	if err != nil {
 		Respond(c, http.StatusNotFound, nil, err)
