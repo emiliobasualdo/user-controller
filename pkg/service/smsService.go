@@ -20,7 +20,7 @@ func SMSInit(){
 }
 
 func SendSmsCode(to string) error {
-	if to == "5491100000000" {
+	if to == "+5491100000000" {
 		return nil
 	}
 	_, err := sendSms(to)
@@ -54,5 +54,8 @@ func checkCode(number string, code string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return resp.Valid, nil
+	if resp.Status == "approved" {
+		return true, nil
+	}
+	return false, nil
 }
