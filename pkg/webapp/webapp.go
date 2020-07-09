@@ -28,8 +28,9 @@ func Serve(_log *logger.Logger) {
 	auth.POST("/login", authMiddleware.LoginHandler)
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	me := router.Group("/me", authMiddleware.MiddlewareFunc(), AuthMiddlewareWrapper())
-	me.GET("/", MeHandler)
 	{
+		me.GET("/", MeHandler)
+		me.POST("/", EditMeHandler)
 		instruments := me.Group("/instruments")
 		{
 			instruments.GET("/", GetInstrumentsHandler)

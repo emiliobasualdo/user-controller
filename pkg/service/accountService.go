@@ -15,6 +15,14 @@ func GetAccountById(id uint) (Account, error) {
 	return persistence.GetAccountById(id)
 }
 
+func EditAccount(accId uint, newAcc Account) (Account, error)  {
+	acc, err := GetAccountById(accId)
+	if err != nil {
+		return Account{}, err
+	}
+	return persistence.EditAccount(acc, newAcc)
+}
+
 func GetEnabledInstrumentsByAccountId(id uint) ([]Instrument, error) {
 	insts, err := persistence.GetInstrumentsByAccountId(id)
 	if err != nil {

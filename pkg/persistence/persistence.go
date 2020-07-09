@@ -28,12 +28,25 @@ func GetAccountByPhoneNumberOrCreate(query Account) (Account, error) {
 	return account, nil
 }
 
+func GetAccountById(id uint) (Account, error) {
+	var acc Account
+	if db.First(&acc, id).RecordNotFound() {
+		return Account{}, &NoSuchAccountError{ID: id}
+	}
+	return acc, nil
+}
+
 func getByPhoneNumber(query Account) (Account, error) {
 	var account Account
 	if db.Where(&Account{PhoneNumber: query.PhoneNumber}).First(&account).RecordNotFound() {
 		return account, gorm.ErrRecordNotFound
 	}
 	return account, nil
+}
+
+func EditAccount(old Account, new Account) (Account, error) {
+	err := db.Model(&old).Update(new).Error
+	return old, err
 }
 
 func GetInstrumentsByAccountId(id uint) ([]Instrument, error)  {
@@ -70,14 +83,6 @@ func SaveInstrument(instrument Instrument) error {
 		return err
 	}
 	return nil
-}
-
-func GetAccountById(id uint) (Account, error) {
-	var acc Account
-	if db.First(&acc, id).RecordNotFound() {
-		return Account{}, &NoSuchAccountError{ID: id}
-	}
-	return acc, nil
 }
 
 func ExecuteTransaction(originAcc Account, destAcc Account, trans Transaction)  (Transaction, error){

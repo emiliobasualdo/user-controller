@@ -1,5 +1,25 @@
 basePath: /
 definitions:
+  dtos.AccountDto:
+    properties:
+      dni:
+        example: "21399433"
+        type: string
+      email:
+        example: moni.argento@hotmail.com
+        type: string
+      lastName:
+        example: Potrelli de Argento
+        type: string
+      name:
+        example: Mónica
+        type: string
+    required:
+    - dni
+    - email
+    - lastName
+    - name
+    type: object
   dtos.InstrumentDto:
     properties:
       creditType:
@@ -28,6 +48,13 @@ definitions:
       validThru:
         example: 11/24
         type: string
+    required:
+    - creditType
+    - holder
+    - issuer
+    - lastFourNumbers
+    - pps
+    - validThru
     type: object
   dtos.LoginDto:
     properties:
@@ -37,12 +64,17 @@ definitions:
       phoneNumber:
         example: "+5491133071114"
         type: string
+    required:
+    - code
+    - phoneNumber
     type: object
   dtos.PhoneNumberDto:
     properties:
       phoneNumber:
         example: "+5491133071114"
         type: string
+    required:
+    - phoneNumber
     type: object
   dtos.TokenDto:
     properties:
@@ -67,6 +99,10 @@ definitions:
       instrumentId:
         example: 5
         type: integer
+    required:
+    - amount
+    - destinationAccountId
+    - instrumentId
     type: object
   models.Account:
     properties:
@@ -79,6 +115,12 @@ definitions:
         type: array
       createdAt:
         example: "2020-07-07T11:38:09.157803072Z"
+        type: string
+      dni:
+        example: "21399433"
+        type: string
+      email:
+        example: moni.argento@hotmail.com
         type: string
       id:
         example: 5
@@ -231,13 +273,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Account'
-            type: array
-        "400":
-          description: Illegal token
-          schema:
-            type: string
+            $ref: '#/definitions/models.Account'
         "401":
           description: Unauthorized
           schema:
@@ -247,6 +283,32 @@ paths:
           schema:
             type: string
       summary: Get available Instruments
+    post:
+      description: Replaces all the account information with the information pased
+      operationId: Edit account
+      parameters:
+      - description: Fields to edit
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.AccountDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Account'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: ' "no such user'
+          schema:
+            type: string
+      summary: Edit account information
   /me/instruments:
     get:
       description: Returns a list of the available instruments uploaded by the client

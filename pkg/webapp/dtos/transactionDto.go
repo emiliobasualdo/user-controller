@@ -3,9 +3,9 @@ package dtos
 import . "massimple.com/wallet-controller/pkg/models"
 
 type TransactionDto struct {
-	Amount			float64 `json:"amount" example:"1504.56"`
-	InstrumentId 	uint	`json:"instrumentId" example:"5"`
-	DestinationID	uint 	`json:"destinationAccountId" example:"3"`
+	Amount			float64 `json:"amount" binding:"required" example:"1504.56"`
+	InstrumentId 	uint	`json:"instrumentId"  binding:"required"example:"5"`
+	DestinationID	uint 	`json:"destinationAccountId" binding:"required" example:"3"`
 }
 
 func (td TransactionDto) Builder() TransactionBuilder {

@@ -105,16 +105,46 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Account"
-                            }
+                            "$ref": "#/definitions/models.Account"
                         }
                     },
-                    "400": {
-                        "description": "Illegal token",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": " \"no such user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Replaces all the account information with the information pased",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Edit account information",
+                "operationId": "Edit account",
+                "parameters": [
+                    {
+                        "description": "Fields to edit",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.AccountDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Account"
                         }
                     },
                     "401": {
@@ -315,8 +345,43 @@ var doc = `{
         }
     },
     "definitions": {
+        "dtos.AccountDto": {
+            "type": "object",
+            "required": [
+                "dni",
+                "email",
+                "lastName",
+                "name"
+            ],
+            "properties": {
+                "dni": {
+                    "type": "string",
+                    "example": "21399433"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "moni.argento@hotmail.com"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Potrelli de Argento"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Mónica"
+                }
+            }
+        },
         "dtos.InstrumentDto": {
             "type": "object",
+            "required": [
+                "creditType",
+                "holder",
+                "issuer",
+                "lastFourNumbers",
+                "pps",
+                "validThru"
+            ],
             "properties": {
                 "creditType": {
                     "type": "string",
@@ -356,6 +421,10 @@ var doc = `{
         },
         "dtos.LoginDto": {
             "type": "object",
+            "required": [
+                "code",
+                "phoneNumber"
+            ],
             "properties": {
                 "code": {
                     "type": "string",
@@ -369,6 +438,9 @@ var doc = `{
         },
         "dtos.PhoneNumberDto": {
             "type": "object",
+            "required": [
+                "phoneNumber"
+            ],
             "properties": {
                 "phoneNumber": {
                     "type": "string",
@@ -395,6 +467,11 @@ var doc = `{
         },
         "dtos.TransactionDto": {
             "type": "object",
+            "required": [
+                "amount",
+                "destinationAccountId",
+                "instrumentId"
+            ],
             "properties": {
                 "amount": {
                     "type": "number",
@@ -426,6 +503,14 @@ var doc = `{
                 "createdAt": {
                     "type": "string",
                     "example": "2020-07-07T11:38:09.157803072Z"
+                },
+                "dni": {
+                    "type": "string",
+                    "example": "21399433"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "moni.argento@hotmail.com"
                 },
                 "id": {
                     "type": "integer",

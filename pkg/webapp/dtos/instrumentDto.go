@@ -3,12 +3,12 @@ package dtos
 import "massimple.com/wallet-controller/pkg/models"
 
 type InstrumentDto struct {
-	Holder    		string		`json:"holder" example:"José Pepe Argento"`
-	LastFourNumbers string		`json:"lastFourNumbers" example:"4930"`
-	ValidThru 		string		`json:"validThru" example:"11/24"`
-	Issuer	 		string		`json:"issuer" example:"Banco Itaú"`
-	PPS 			string		`json:"pps" example:"VISA" enums:"VISA, AMEX, MC"`
-	CreditType 		string		`json:"creditType" example:"DEBIT" enums:"DEBIT, CREDIT, PREPAID"`
+	Holder    		string		`json:"holder" binding:"required" example:"José Pepe Argento"`
+	LastFourNumbers string		`json:"lastFourNumbers" binding:"required" example:"4930"`
+	ValidThru 		string		`json:"validThru"binding:"required"  example:"11/24"`
+	Issuer	 		string		`json:"issuer" binding:"required" example:"Banco Itaú"`
+	PPS 			string		`json:"pps" binding:"required" example:"VISA" enums:"VISA, AMEX, MC"`
+	CreditType 		string		`json:"creditType" binding:"required" example:"DEBIT" enums:"DEBIT, CREDIT, PREPAID"`
 }
 
 func (dto InstrumentDto) Builder() models.InstrumentBuilder{

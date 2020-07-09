@@ -3,12 +3,12 @@ package dtos
 import "time"
 
 type LoginDto struct {
-	PhoneNumber string `json:"phoneNumber" example:"+5491133071114"`
-	Code 		string `json:"code" example:"123654"`
+	PhoneNumber string `json:"phoneNumber" binding:"required" example:"+5491133071114"`
+	Code 		string `json:"code" binding:"required" example:"123654"`
 }
 
 type PhoneNumberDto struct {
-	PhoneNumber string `json:"phoneNumber" example:"+5491133071114"`
+	PhoneNumber string `json:"phoneNumber" binding:"required" example:"+5491133071114"`
 }
 
 type TokenDto struct {
