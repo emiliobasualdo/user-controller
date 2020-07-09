@@ -57,14 +57,8 @@ var doc = `{
                             "$ref": "#/definitions/dtos.TokenDto"
                         }
                     },
-                    "400": {
-                        "description": "The phone number does not match the code",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": " \"id does not exist",
+                    "401": {
+                        "description": "Invalid phone and code combination",
                         "schema": {
                             "type": "string"
                         }
@@ -286,7 +280,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Executes as transaction and returns its full details",
+                "description": "Executes as transaction and returns it's full details",
                 "produces": [
                     "application/json"
                 ],

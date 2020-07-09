@@ -6,4 +6,5 @@ var log *logger.Logger
 
 func Init(_log *logger.Logger) {
 	log = _log
+	SMSInit()
 }

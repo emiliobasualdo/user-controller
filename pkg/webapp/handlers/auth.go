@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -50,8 +51,7 @@ func AuthMiddlewareWrapper() gin.HandlerFunc {
 // @Produce  json
 // @Param   login body  dtos.LoginDto true "user's phone number and the received sms code"
 // @Success 200 {object} dtos.TokenDto
-// @Failure 400 {object} string "The phone number does not match the code"
-// @Failure 404 {object} string "" "id does not exist"
+// @Failure 401 {object} string "Invalid phone and code combination"
 // @Router /auth/login [post]
 //https://github.com/appleboy/gin-jwt
 func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
@@ -80,7 +80,7 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 			if err := c.ShouldBind(&login); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
-			return getJwtAccount(login.PhoneNumber)
+			return getJwtAccount(login.PhoneNumber, login.Code)
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			if v, ok := data.(*JwtUser); ok && !v.Disabled {
@@ -115,7 +115,14 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 	})
 }
 
-func getJwtAccount(phoneNumber string) (interface{}, error) {
+func getJwtAccount(phoneNumber string, code string) (interface{}, error) {
+	verified, err := service.CheckCode(phoneNumber, code)
+	if !verified {
+		return nil, errors.New("invalid code")
+	}
+	if err != nil {
+		return nil, err
+	}
 	acc, err := service.GetAccount(phoneNumber)
 	if err != nil {
 		return nil, err
@@ -137,7 +144,7 @@ func SendSmsHandler(c *gin.Context)  {
 		Respond(c, http.StatusBadRequest, "You must provide a phone number", nil)
 		return
 	}
-	if err := service.SendSms(phoneNumber.PhoneNumber); err != nil {
+	if err := service.SendSmsCode(phoneNumber.PhoneNumber); err != nil {
 		Respond(c, http.StatusBadRequest, nil, err)
 		return
 	}
