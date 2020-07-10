@@ -37,7 +37,6 @@ func envInit() {
 	value, exists := os.LookupEnv("ENV")
 	if exists && value == "PROD" {
 		log.Info("Running in PROD mode")
-		viper.SetConfigName("config-prod")
 	} else {
 		log.Info("Running in DEV mode")
 		viper.SetConfigName("config-dev")
