@@ -3,7 +3,6 @@ package service
 import (
 	. "massimple.com/wallet-controller/pkg/models"
 	"massimple.com/wallet-controller/pkg/persistence"
-	"time"
 )
 
 func GetAccount(phoneNumber string) (Account, error) {
@@ -31,7 +30,7 @@ func GetEnabledInstrumentsByAccountId(id uint) ([]Instrument, error) {
 	// we remove disabled instruments
 	resp := make([]Instrument, 0)
 	for _, inst := range insts {
-		if inst.DisabledAt.IsZero() {
+		if !inst.Disabled {
 			resp = append(resp, inst)
 		}
 	}
@@ -50,8 +49,8 @@ func DeleteInstrumentById(accountId uint, instrumentId uint) error {
 	if inst.AccountID != accountId {
 		return &UnauthorizedError{Message: "The instrument does not belong to the user"}
 	}
-	if inst.DisabledAt.IsZero() {
-		inst.DisabledAt = time.Now()
+	if !inst.Disabled {
+		inst.Disabled = true
 		err = persistence.SaveInstrument(inst)
 	}
 	return err
@@ -68,7 +67,7 @@ func ExecuteTransaction(originId uint, trans Transaction) (Transaction, error) {
 		return Transaction{}, err
 	}
 	// origin is enabled
-	if !originAcc.DisabledSince.IsZero() {
+	if !originAcc.Disabled {
 		return Transaction{}, &DisabledAccountError{Message: "The origin account is disabled"}
 	}
 	// origin has enough balance
@@ -96,7 +95,7 @@ func ExecuteTransaction(originId uint, trans Transaction) (Transaction, error) {
 		return Transaction{}, err
 	}
 	// destination is enabled
-	if !destAcc.DisabledSince.IsZero() {
+	if !destAcc.Disabled {
 		return Transaction{}, &DisabledAccountError{Message: "The destination account is disabled"}
 	}
 	// execute transaction

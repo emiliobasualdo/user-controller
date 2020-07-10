@@ -3,16 +3,16 @@ package models
 import "time"
 
 type Instrument struct {
-	ID            	uint		`json:"id" gorm:"primary_key" example:"1"`
-	AccountID		uint		`json:"accountId" example:"3"`
-	Holder    		string		`json:"holder" example:"José Pepe Argento"`
-	LastFourNumbers string		`json:"lastFourNumbers" example:"4930"`
-	ValidThru 		string		`json:"validThru" example:"11/24"`
-	Issuer	 		string		`json:"issuer" example:"Banco Itaú"`
-	PPS 			string		`json:"pps" example:"VISA" enums:"VISA, AMEX, MC"`
-	CreditType 		string		`json:"creditType" example:"DEBIT" enums:"DEBIT, CREDIT, PREPAID"`
-	CreatedAt     	time.Time	`json:"createdAt" example:"2020-07-07 13:36:15.738848+02:00"`
-	DisabledAt		time.Time	`json:"-"` // we dont export this field
+	ID              uint      	`json:"id" gorm:"primary_key" example:"1"`
+	AccountID       uint      	`json:"accountId" example:"3"`
+	Holder          string    	`json:"holder" example:"José Pepe Argento"`
+	LastFourNumbers string    	`json:"lastFourNumbers" example:"4930"`
+	ValidThru       string    	`json:"validThru" example:"11/24"`
+	Issuer          string    	`json:"issuer" example:"Banco Itaú"`
+	PPS             string    	`json:"pps" example:"VISA" enums:"VISA, AMEX, MC"`
+	CreditType      string    	`json:"creditType" example:"DEBIT" enums:"DEBIT, CREDIT, PREPAID"`
+	CreatedAt       time.Time	`json:"createdAt" example:"2020-07-07 13:36:15.738848+02:00"`
+	Disabled   		bool		`json:"-" gorm:"default:false"` // we dont export this field
 }
 
 type InstrumentBuilder interface {

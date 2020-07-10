@@ -1,0 +1,8 @@
+database:
+  dbName: "wallet-controller"   # db must be previously created
+  connectionUri: "root:ertyuiop@/wallet_controller"
+  verbose: true
+
+server:
+  port: 5000
+  verbose: false

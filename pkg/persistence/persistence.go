@@ -18,19 +18,25 @@ var tables = []struct {
 
 func GetAccountByPhoneNumberOrCreate(query Account) (Account, error) {
 	account, err := getByPhoneNumber(query)
-	if err == gorm.ErrRecordNotFound {
-		account = query
-		if err := db.Create(&account).Error; err != nil {
-			return Account{}, err
-		}
-		log.InfoF("Creating user with phone number: %s", account.PhoneNumber)
+	if err == nil {
+		return account, nil
 	}
-	return account, nil
+	if err != gorm.ErrRecordNotFound {
+		return Account{}, err
+	}
+	log.InfoF("Creating user with phone number: %s", query.PhoneNumber)
+	account = query
+	if err := db.Create(&account).Error; err == nil {
+		return account, nil
+	} else {
+		return Account{}, nil
+	}
+
 }
 
 func GetAccountById(id uint) (Account, error) {
 	var acc Account
-	if db.First(&acc, id).RecordNotFound() {
+	if db.Model(&acc).Preload("Instruments").First(&acc, id).RecordNotFound() {
 		return Account{}, &NoSuchAccountError{ID: id}
 	}
 	return acc, nil

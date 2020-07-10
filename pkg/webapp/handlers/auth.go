@@ -127,7 +127,7 @@ func getJwtAccount(phoneNumber string, code string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return JwtUser{ID: fmt.Sprint(acc.ID), Disabled: !acc.DisabledSince.IsZero()}, nil
+	return JwtUser{ID: fmt.Sprint(acc.ID), Disabled: !acc.Disabled}, nil
 }
 
 // @Summary SMS auth

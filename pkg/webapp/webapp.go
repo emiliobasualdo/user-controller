@@ -3,15 +3,18 @@ package webapp
 import (
 	"github.com/apsdehal/go-logger"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	. "massimple.com/wallet-controller/pkg/webapp/handlers"
 )
 
-const PORT = "5000"
-
 var log *logger.Logger
 
-func Serve(_log *logger.Logger) {
-	log = _log
+func Serve(port string) {
+	if viper.GetBool("server.verbose") {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
 	router := gin.Default()
@@ -29,25 +32,25 @@ func Serve(_log *logger.Logger) {
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	me := router.Group("/me", authMiddleware.MiddlewareFunc(), AuthMiddlewareWrapper())
 	{
-		me.GET("/", MeHandler)
-		me.POST("/", EditMeHandler)
+		me.GET("", MeHandler)
+		me.POST("", EditMeHandler)
 		instruments := me.Group("/instruments")
 		{
-			instruments.GET("/", GetInstrumentsHandler)
-			instruments.POST("/", InsertInstrumentsHandler)
+			instruments.GET("", GetInstrumentsHandler)
+			instruments.POST("", InsertInstrumentsHandler)
 			instruments.DELETE("/:id", DeleteInstrumentsHandler)
 		}
 		transactions := me.Group("/transactions")
 		{
-			transactions.GET("/", TransactionHistoryHandler)
-			transactions.POST("/", NewTransactionHandler)
+			transactions.GET("", TransactionHistoryHandler)
+			transactions.POST("", NewTransactionHandler)
 		}
 	}
 	// swagger docs
 	router.GET("/api-doc/*any", SwaggerHandler)
 
-	if err := router.Run(":"+PORT); err != nil {
+	if err := router.Run(":"+port); err != nil {
 		panic(err)
 	}
-	log.NoticeF("Server started on port %s", PORT)
+	log.NoticeF("Server started on port %s", port)
 }
