@@ -1,1 +1,0 @@
-swag init -g pkg/webapp/apiinfo.go

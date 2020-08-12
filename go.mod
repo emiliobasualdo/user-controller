@@ -14,6 +14,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/golang/mock v1.4.4 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/inconshreveable/log15 v0.0.0-20200109203555-b30bc20e4fd1 // indirect
 	github.com/jinzhu/gorm v1.9.14
@@ -26,6 +27,7 @@ require (
 	github.com/kr/pty v1.1.8 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0
+	github.com/mitranim/gow v0.0.0-20200811065821-e3aeb285f27a // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
@@ -37,8 +39,9 @@ require (
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.1.0 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
+	go.mongodb.org/mongo-driver v1.4.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed // indirect
 	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/tools v0.0.0-20200706234117-b22de6825cf7 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
