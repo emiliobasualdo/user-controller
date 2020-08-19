@@ -71,4 +71,3 @@ func PrepaidDtoFromPrepaid(prepaid Prepaid) PrepaidDto {
 		SaldoDolar:              0,
 	}
 }
-

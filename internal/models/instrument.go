@@ -6,7 +6,7 @@ import (
 )
 
 type Instrument struct {
-	ID              string      		`json:"id" gorm:"primary_key" example:"1"`
+	ID              ID      		`json:"id" gorm:"primary_key" example:"1"`
 	MongoID     	primitive.ObjectID 	`json:"-" bson:"_id,omitempty" example:"5adf87asdfa7s8df6a9"`
 	AccountID       string      		`json:"accountId" example:"3"`
 	Holder          string    			`json:"holder" example:"José Pepe Argento"`

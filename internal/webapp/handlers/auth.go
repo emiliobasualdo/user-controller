@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	. "massimple.com/wallet-controller/internal/dtos"
+	"massimple.com/wallet-controller/internal/models"
 	"massimple.com/wallet-controller/internal/service"
 	. "massimple.com/wallet-controller/internal/webapp/utils"
 	"net/http"
@@ -16,7 +16,7 @@ const IdentityKey = "acc_id"
 const Realm = "text-realm" // todo change based on env
 
 type JwtUser struct {
-	ID  string
+	ID  models.ID
 	Disabled bool
 }
 
@@ -24,7 +24,7 @@ type JwtUserInterface interface {
 	getId()	string
 }
 
-func (jw JwtUser) getId() string {
+func (jw JwtUser) getId() models.ID {
 	return jw.ID
 }
 
@@ -67,7 +67,7 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &JwtUser{
-				ID: claims[IdentityKey].(string),
+				ID: claims[IdentityKey].(models.ID),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -122,7 +122,7 @@ func getJwtAccount(phoneNumber string, code string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return JwtUser{ID: fmt.Sprint(acc.ID), Disabled: !acc.Disabled}, nil
+	return JwtUser{ID: acc.ID, Disabled: !acc.Disabled}, nil
 }
 
 // @Summary SMS auth

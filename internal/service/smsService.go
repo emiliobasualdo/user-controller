@@ -13,10 +13,10 @@ const VerifyServiceId = "VA28a6c2e09395cf1782d9decfe213b8c5"
 const FromSms = "+14068135125"
 const FromWapp = "+14155238886"
 
-var client *twilio.Client
+var twilioClient *twilio.Client
 
 func SMSInit(){
-	client = twilio.NewClient(AccountSid, AuthToken, nil)
+	twilioClient = twilio.NewClient(AccountSid, AuthToken, nil)
 	log.Info("Sms provider connected")
 }
 
@@ -29,12 +29,12 @@ func SendSmsCode(to string) error {
 }
 
 func sendSms(to string) (*twilio.VerifyPhoneNumber, error) {
-	//_, err := client.Messages.SendMessage(FromSms, phoneNumber, "Sent via go :) ✓", nil)
+	//_, err := twilioClient.Messages.SendMessage(FromSms, phoneNumber, "Sent via go :) ✓", nil)
 	v := url.Values{}
 	v.Set("To", to)
 	v.Set("Channel", "sms")
 	v.Set("Locale", "es")
-	return client.Verify.Verifications.Create(context.Background(), VerifyServiceId, v)
+	return twilioClient.Verify.Verifications.Create(context.Background(), VerifyServiceId, v)
 }
 
 func CheckCode(phoneNumber string, code string) (bool, error) {
@@ -51,7 +51,7 @@ func checkCode(number string, code string) (bool, error) {
 	v := url.Values{}
 	v.Set("To", number)
 	v.Set("Code", code)
-	resp, err := client.Verify.Verifications.Check(context.Background(), VerifyServiceId, v)
+	resp, err := twilioClient.Verify.Verifications.Check(context.Background(), VerifyServiceId, v)
 	if err != nil {
 		return false, err
 	}

@@ -31,7 +31,7 @@ func GetInstrumentsHandler(c *gin.Context) {
 // @Description Return the instrument object with its id
 // @query Insert instrument
 // @Produce  json
-// @Param   id     path    uint     true    "Id of the user that requests the instruments"
+// @Param   id     path    uint     true    "ID of the user that requests the instruments"
 // @Param   instrument body  dtos.InstrumentDto  true "Instrument to insert"
 // @Success 200
 // @Failure 400 {object} string "The id provided is illegal"

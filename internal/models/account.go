@@ -5,18 +5,26 @@ import (
 	"time"
 )
 
+type ID string
+type IDInterface interface {
+	String()	string
+}
+
+func (id *ID) String() string {
+	return string(*id)
+}
 type Account struct {
-	ID     			string			 	`json:"id" bson:"id,omitempty" example:"5adf87asdfa7s8df6a9"`
-	MongoID     	primitive.ObjectID 	`json:"-" bson:"_id,omitempty" example:"5adf87asdfa7s8df6a9"`
-	GPID            string		  		`json:"-" example:"58756"`
-	Name          	string        		`json:"name" example:"Mónica"`
-	LastName      	string        		`json:"lastName" example:"Potrelli de Argento"`
-	PhoneNumber   	string        		`json:"phoneNumber" gorm:"unique:not null" example:"+5491133071114"`
-	DNI				string        		`json:"dni" example:"21399433"`
-	Email			string        		`json:"email" example:"moni.argento@hotmail.com"`
-	Instruments   	[]Instrument  		`json:"instruments" gorm:"foreignkey:AccountID"`
-	Prepaids	 	[]Prepaid 			`json:"prepaids"`
-	Transactions 	[]Transaction 		`json:"transactions"`
+	ID           ID                 `json:"id" bson:"id,omitempty" example:"5adf87asdfa7s8df6a9"`
+	MongoID      primitive.ObjectID `json:"-" bson:"_id,omitempty" example:"5adf87asdfa7s8df6a9"`
+	GPID         string             `json:"-" example:"58756"`
+	Name         string             `json:"name" example:"Mónica"`
+	LastName     string             `json:"lastName" example:"Potrelli de Argento"`
+	PhoneNumber  string             `json:"phoneNumber" gorm:"unique:not null" example:"+5491133071114"`
+	DNI          string             `json:"dni" example:"21399433"`
+	Email        string             `json:"email" example:"moni.argento@hotmail.com"`
+	Instruments  []Instrument       `json:"instruments" gorm:"foreignkey:AccountID"`
+	Prepaids     []Prepaid          `json:"prepaids"`
+	Transactions []Transaction      `json:"transactions"`
 	Balance       	float64       		`json:"balance" example:"5430.54"`
 	Disabled		bool				`json:"-"`
 	CreatedAt     	time.Time     		`json:"createdAt" bson:"createdAt,omitempty" example:"2020-07-07T11:38:09.157803072Z"`

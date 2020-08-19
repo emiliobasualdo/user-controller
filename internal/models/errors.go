@@ -50,3 +50,9 @@ type IllegalTransactionError struct {
 func (e *IllegalTransactionError) Error() string {
 	return fmt.Sprint(e.Message)
 }
+
+type NotImplementedError string
+
+func (e NotImplementedError) Error() string {
+	return "pkcs12: " + string(e)
+}

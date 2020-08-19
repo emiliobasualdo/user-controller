@@ -11,11 +11,11 @@ func GetAccount(phoneNumber string) (Account, error) {
 	return persistence.GetAccountByPhoneNumberOrCreate(acc)
 }
 
-func GetAccountById(id string) (Account, error) {
+func GetAccountById(id ID) (Account, error) {
 	return persistence.GetAccountById(id)
 }
 
-func EditAccount(accId string, newAcc dtos.AccountDto) error {
+func EditAccount(accId ID, newAcc dtos.AccountDto) error {
 	orignal, err := GetAccountById(accId)
 	if err != nil {
 		return err
@@ -23,7 +23,7 @@ func EditAccount(accId string, newAcc dtos.AccountDto) error {
 	return persistence.ReplaceAccount(dtos.FillAccountFromDto(orignal,newAcc))
 }
 
-func GetEnabledInstrumentsByAccountId(id string) ([]Instrument, error) {
+func GetEnabledInstrumentsByAccountId(id ID) ([]Instrument, error) {
 	acc, err := persistence.GetAccountById(id)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func GetEnabledInstrumentsByAccountId(id string) ([]Instrument, error) {
 	return resp, nil
 }
 
-func InsertInstrumentById(accId string, instrument Instrument) error {
+func InsertInstrumentById(accId ID, instrument Instrument) error {
 	acc, err := GetAccountById(accId)
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func InsertInstrumentById(accId string, instrument Instrument) error {
 	return persistence.ReplaceAccount(acc)
 }
 
-func ExecuteTransaction(originId string, trans Transaction) error {
+func ExecuteTransaction(originId ID, trans Transaction) error {
 	// legal transaction
 	if trans.Amount <= 0 {
 		return &IllegalTransactionError{Message: "The amount has to be bigger than 0"}
@@ -79,7 +79,7 @@ func ExecuteTransaction(originId string, trans Transaction) error {
 		}
 	}
 	if !instrumentFound {
-		return &NoSuchInstrumentError{ID: trans.InstrumentId}
+		return &NoSuchInstrumentError{ID: trans.InstrumentId.String()}
 	}
 	// destination exists
 	destAcc, err := GetAccountById(trans.DestinationAccountId)
@@ -100,7 +100,7 @@ func ExecuteTransaction(originId string, trans Transaction) error {
 	return persistence.SaveTransaction(fullTransaction)
 }
 
-func GetTransactions(accId string) ([]Transaction, error) {
+func GetTransactions(accId ID) ([]Transaction, error) {
 	acc, err := GetAccountById(accId)
 	if err != nil {
 		return []Transaction{}, err

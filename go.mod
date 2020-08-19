@@ -10,6 +10,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gin-gonic/gin v1.6.3
+	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8 // indirect
 	github.com/go-openapi/spec v0.19.8 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
@@ -30,6 +31,7 @@ require (
 	github.com/mitranim/gow v0.0.0-20200811065821-e3aeb285f27a // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/mongo-go/testdb v0.0.0-20190724200850-a72a12eee610 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
 	github.com/sfreiberg/gotwilio v0.0.0-20200424172909-47a95c1c632a
 	github.com/spf13/viper v1.7.0

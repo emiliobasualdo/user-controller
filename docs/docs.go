@@ -204,7 +204,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Id of the user that requests the instruments",
+                        "description": "ID of the user that requests the instruments",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -255,7 +255,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Id of the instrument to delete",
+                        "description": "ID of the instrument to delete",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -314,8 +314,8 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Execute transaction",
-                "operationId": "Execute transaction",
+                "summary": "execute transaction",
+                "operationId": "execute transaction",
                 "parameters": [
                     {
                         "description": "Transaction to execute to insert",

@@ -26,9 +26,9 @@ func TransactionHistoryHandler(c *gin.Context) {
 	Respond(c, http.StatusOK, trans, nil)
 }
 
-// @Summary Execute transaction
+// @Summary execute transaction
 // @Description Executes as transaction and returns it's full details
-// @query Execute transaction
+// @query execute transaction
 // @Produce  json
 // @Param   transaction body  dtos.TransactionDto  true "Transaction to execute to insert"
 // @Success 200 {object} models.Transaction

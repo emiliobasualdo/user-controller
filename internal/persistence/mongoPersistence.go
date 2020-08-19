@@ -27,15 +27,15 @@ func GetAccountByPhoneNumberOrCreate(query Account) (Account, error) {
 	}
 }
 
-func GetAccountById(id string) (Account, error) {
+func GetAccountById(id ID) (Account, error) {
 	var acc Account
-	_id, err := primitive.ObjectIDFromHex(id)
+	_id, err := primitive.ObjectIDFromHex(id.String())
 	if err != nil {
 		return acc, err
 	}
 	single := usersCollection.FindOne(ctx, bson.M{"_id": _id})
 	if single.Err() == mongo.ErrNoDocuments {
-		return Account{}, &NoSuchAccountError{Query: id}
+		return Account{}, &NoSuchAccountError{Query: id.String()}
 	}
 	if err := single.Decode(&acc); err != nil{
 		return Account{}, err
@@ -57,13 +57,13 @@ func getByPhoneNumber(phoneNumber string) (Account, error) {
 }
 
 func ReplaceAccount(new Account) error {
-	_id, err := primitive.ObjectIDFromHex(new.ID)
+	_id, err := primitive.ObjectIDFromHex(new.ID.String())
 	if err != nil {
 		return err
 	}
 	single := usersCollection.FindOneAndReplace(ctx, bson.M{"_id": _id}, new)
 	if single.Err() == mongo.ErrNoDocuments {
-		return &NoSuchAccountError{Query: new.ID}
+		return &NoSuchAccountError{Query: new.ID.String()}
 	}
 	return nil
 }
@@ -83,7 +83,7 @@ func SaveTransaction(trans Transaction) error {
 	}
 	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
 		// Le insertamos la transacción a la cuenta
-		id, _ := primitive.ObjectIDFromHex(trans.OriginAccountId)
+		id, _ := primitive.ObjectIDFromHex(trans.OriginAccountId.String())
 		query := bson.M{"_id": id}
 		update := bson.M{"$push": bson.M{TRANSACTIONS: trans}}
 		if _, err := usersCollection.UpdateOne(ctx, query, update); err != nil {

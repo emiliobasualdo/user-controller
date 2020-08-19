@@ -8,25 +8,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"massimple.com/wallet-controller/internal/models"
+	"massimple.com/wallet-controller/internal/utils"
 	"os"
 	"strings"
 	"testing"
 	"time"
 )
 
-func env(){
-	// set defaults
-	viper.SetConfigName("config-test")
-	viper.AddConfigPath("./../../")		// search locally in this directory
-	err := viper.ReadInConfig() 		// Find and read the config file
-	if err != nil {
-		panic(err)
-	}
-}
-
-func setup(m *testing.M) {
+func setup() {
 	// We pick up the env setup
-	env()
+	utils.EnvInit("TEST")
 	// we now connect
 	dbInit()
 }
@@ -58,7 +49,7 @@ func shutdown() {
 }
 
 func TestMain(m *testing.M) {
-	setup(m)
+	setup()
 	code := m.Run()
 	shutdown()
 	os.Exit(code)
@@ -134,7 +125,7 @@ func TestGetAccountById_returnsExistent(t *testing.T) {
 	accountExpected := models.Account{Name: "To be returned"}
 	mongoId := insertAccount(accountExpected).Hex()
 	//EXERCISE
-	acc, err := GetAccountById(mongoId)
+	acc, err := GetAccountById(models.ID(mongoId))
 	// ASSERT
 	t.Run("No error", func(t *testing.T) {
 		if err != nil {
@@ -211,7 +202,7 @@ func TestGetAccountByPhoneNumberOrCreate_replaces(t *testing.T) {
 	mongoId := insertAccount(oldAcc)
 	now := time.Now()
 	replaceWith := models.Account{
-		ID: 		mongoId.Hex(),
+		ID: 		models.ID(mongoId.Hex()),
 		LastName:  "Other lastname",
 		CreatedAt: now,
 	}
@@ -224,7 +215,7 @@ func TestGetAccountByPhoneNumberOrCreate_replaces(t *testing.T) {
 		if err != nil {
 			t.Errorf("got %s, want nil", err.Error())
 		}
-		if newAcc.ID != mongoId.Hex() {
+		if newAcc.ID.String() != mongoId.Hex() {
 			t.Errorf("got %s, want %s", newAcc.ID, mongoId.Hex())
 		}
 		if newAcc.Name != "" {
