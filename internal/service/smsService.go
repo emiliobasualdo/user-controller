@@ -46,10 +46,10 @@ func sendSms(to string) (*twilio.VerifyPhoneNumber, error) {
 func CheckCode(phoneNumber models.PhoneNumber, code string) (bool, error) {
 	env, _ := os.LookupEnv("ENV")
 	if env == "DEV" {
-		if code == "000000" {
+		if code == "0000" {
 			return false, nil
 		}
-		if code == "111111" {
+		if code == "1111" {
 			return true, nil
 		}
 	}

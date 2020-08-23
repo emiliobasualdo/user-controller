@@ -1,13 +1,11 @@
 # https://github.com/azer/go-makefile-example/blob/master/Makefile
 
-## run: Runs application.go. ENV=DEV
-run: export ENV = DEV
+## run: Runs application.go.
 run:
 	@echo "  >  Simple go run"
 	go run application.go
 
-## watch: Auto-starts when code changes. ENV = DEV
-watch: export ENV = DEV
+## watch: Auto-starts when code changes.
 watch:
 	@echo "  >  Dev watch mode. Produces swagger documentation and runs"
 	reflex -sr '.*.go' -G 'docs/*' $(MAKE) documentation $(MAKE) run
