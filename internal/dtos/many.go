@@ -1,14 +1,13 @@
 package dtos
 
-import "time"
+import (
+	"massimple.com/wallet-controller/internal/models"
+	"time"
+)
 
 type LoginDto struct {
-	PhoneNumber string `json:"phoneNumber" binding:"required" example:"+5491133071114"`
+	PhoneNumber models.PhoneNumber `json:"phoneNumber" binding:"required" example:"005491133071114"`
 	Code 		string `json:"code" binding:"required" example:"123654"`
-}
-
-type PhoneNumberDto struct {
-	PhoneNumber string `json:"phoneNumber" binding:"required" example:"+5491133071114"`
 }
 
 type TokenDto struct {
@@ -18,7 +17,7 @@ type TokenDto struct {
 }
 
 type PrepaidDto struct {
-	ID uint 	`json:"id" example:"2010"`
+	ID models.ID 	`json:"id" `
 	Brand string `json:"QUILMES" example:"4200"`
 	DisponibleCompra float64 `json:"availableLocal" example:"230.45"`
 	DisponibleAnticipo float64 `json:"availableLocalInAdvanced" example:"230.45"`

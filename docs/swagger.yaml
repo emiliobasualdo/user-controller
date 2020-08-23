@@ -8,17 +8,31 @@ definitions:
       email:
         example: moni.argento@hotmail.com
         type: string
+      id:
+        type: ID
+      instruments:
+        items:
+          $ref: '#/definitions/dtos.InstrumentDto'
+        type: array
       lastName:
         example: Potrelli de Argento
         type: string
       name:
         example: Mónica
         type: string
+      phoneNumber:
+        type: PhoneNumber
+      prepaids:
+        items:
+          $ref: '#/definitions/dtos.PrepaidDto'
+        type: array
     required:
     - dni
     - email
+    - id
     - lastName
     - name
+    - phoneNumber
     type: object
   dtos.InstrumentDto:
     properties:
@@ -62,19 +76,37 @@ definitions:
         example: "123654"
         type: string
       phoneNumber:
-        example: "+5491133071114"
+        example: "005491133071114"
         type: string
     required:
     - code
     - phoneNumber
     type: object
-  dtos.PhoneNumberDto:
+  dtos.PrepaidDto:
     properties:
-      phoneNumber:
-        example: "+5491133071114"
+      QUILMES:
+        example: "4200"
         type: string
-    required:
-    - phoneNumber
+      availableDollar:
+        example: 12.34
+        type: number
+      availableDollarInAdvanced:
+        example: 12.34
+        type: number
+      availableLocal:
+        example: 230.45
+        type: number
+      availableLocalInAdvanced:
+        example: 230.45
+        type: number
+      creditDollar:
+        example: -23.54
+        type: number
+      creditLocal:
+        example: -2850.63
+        type: number
+      id:
+        type: string
     type: object
   dtos.TokenDto:
     properties:
@@ -94,25 +126,24 @@ definitions:
         example: 1504.56
         type: number
       destinationAccountId:
-        example: 3
-        type: integer
+        type: ID
       instrumentId:
-        example: 5
-        type: integer
+        type: ID
     required:
     - amount
     - destinationAccountId
     - instrumentId
     type: object
+  handlers.phoneNumberDto:
+    properties:
+      phoneNumber:
+        example: "005491133071114"
+        type: string
+    required:
+    - phoneNumber
+    type: object
   models.Account:
     properties:
-      balance:
-        example: 5430.54
-        type: number
-      beneficiaries:
-        items:
-          $ref: '#/definitions/models.Beneficiary'
-        type: array
       createdAt:
         example: "2020-07-07T11:38:09.157803072Z"
         type: string
@@ -123,8 +154,7 @@ definitions:
         example: moni.argento@hotmail.com
         type: string
       id:
-        example: 5
-        type: integer
+        type: string
       instruments:
         items:
           $ref: '#/definitions/models.Instrument'
@@ -136,26 +166,21 @@ definitions:
         example: Mónica
         type: string
       phoneNumber:
-        example: "+5491133071114"
+        example: "005491133071114"
         type: string
-    type: object
-  models.Beneficiary:
-    properties:
-      accountId:
-        example: 8
-        type: integer
-      lastName:
-        example: Argento
-        type: string
-      name:
-        example: Alfio Coqui
-        type: string
+      prepaids:
+        items:
+          $ref: '#/definitions/models.Prepaid'
+        type: array
+      transactions:
+        items:
+          $ref: '#/definitions/models.Transaction'
+        type: array
     type: object
   models.Instrument:
     properties:
       accountId:
-        example: 3
-        type: integer
+        type: string
       createdAt:
         example: 2020-07-07 13:36:15.738848+02:00
         type: string
@@ -170,8 +195,7 @@ definitions:
         example: José Pepe Argento
         type: string
       id:
-        example: 1
-        type: integer
+        type: string
       issuer:
         example: Banco Itaú
         type: string
@@ -189,6 +213,14 @@ definitions:
         example: 11/24
         type: string
     type: object
+  models.Prepaid:
+    properties:
+      QUILMES:
+        example: "4200"
+        type: string
+      id:
+        type: string
+    type: object
   models.Transaction:
     properties:
       amount:
@@ -198,17 +230,16 @@ definitions:
         example: 2020-07-07 13:36:15.738848+02:00
         type: string
       destinationAccountId:
-        example: 19
-        type: integer
+        example: 19fdsasfads
+        type: string
       id:
-        example: 1
-        type: integer
+        type: string
       instrumentId:
-        example: 5
-        type: integer
+        example: asdfafasdfad5
+        type: string
       originAccountId:
-        example: 3
-        type: integer
+        example: asdfasdfasdf3
+        type: string
     type: object
 host: localhost:5000
 info:
@@ -225,7 +256,6 @@ paths:
   /auth/login:
     post:
       description: Returns a jwt token to use as authentication
-      operationId: Get User
       parameters:
       - description: user's phone number and the received sms code
         in: body
@@ -242,31 +272,27 @@ paths:
             $ref: '#/definitions/dtos.TokenDto'
         "401":
           description: Invalid phone and code combination
-          schema:
-            type: string
       summary: Generate a jwt
   /auth/sms-code:
     post:
-      description: Sends an sms to the specified phonenumber
-      operationId: Get User
+      description: Sends an sms to the specified phoneNumber
       parameters:
       - description: user's phone number
         in: body
         name: login
         required: true
         schema:
-          $ref: '#/definitions/dtos.PhoneNumberDto'
+          $ref: '#/definitions/handlers.phoneNumberDto'
       responses:
         "200": {}
         "400":
+          description: Invalid phone number
+        "500":
           description: Something went wrong
-          schema:
-            type: string
       summary: SMS auth
   /me:
     get:
-      description: Returns a list of the available instruments uploaded by the client
-      operationId: Get Instruments
+      description: Returns an account by its id
       produces:
       - application/json
       responses:
@@ -276,16 +302,9 @@ paths:
             $ref: '#/definitions/models.Account'
         "401":
           description: Unauthorized
-          schema:
-            type: string
-        "404":
-          description: ' "no such user'
-          schema:
-            type: string
-      summary: Get available Instruments
+      summary: Get account details
     post:
       description: Replaces all the account information with the information pased
-      operationId: Edit account
       parameters:
       - description: Fields to edit
         in: body
@@ -298,21 +317,12 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/models.Account'
         "401":
           description: Unauthorized
-          schema:
-            type: string
-        "404":
-          description: ' "no such user'
-          schema:
-            type: string
       summary: Edit account information
   /me/instruments:
     get:
       description: Returns a list of the available instruments uploaded by the client
-      operationId: Get Instruments
       produces:
       - application/json
       responses:
@@ -322,22 +332,15 @@ paths:
             items:
               $ref: '#/definitions/models.Instrument'
             type: array
-        "400":
-          description: Illegal token
-          schema:
-            type: string
-        "404":
-          description: ' "no such user'
-          schema:
-            type: string
+        "401":
+          description: Unauthorized
       summary: Get available Instruments
     post:
       description: |-
         Inserts and instrument to the list of available user instruments
         Return the instrument object with its id
-      operationId: Insert instrument
       parameters:
-      - description: Id of the user that requests the instruments
+      - description: ID of the user that requests the instruments
         in: path
         name: id
         required: true
@@ -351,51 +354,13 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Instrument'
-            type: array
-        "400":
-          description: The id provided is illegal
-          schema:
-            type: string
-        "404":
-          description: id does not exist
-          schema:
-            type: string
+        "200": {}
+        "401":
+          description: Unauthorized
       summary: Insert instrument
-  /me/instruments/{id}:
-    delete:
-      description: Deletes one of the instruments available to the user
-      operationId: Delete Instruments
-      parameters:
-      - description: Id of the instrument to delete
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - text/plain
-      responses:
-        "200":
-          description: Card deleted
-          schema:
-            type: string
-        "400":
-          description: ' "The id provided is illegal'
-          schema:
-            type: string
-        "404":
-          description: ' "id does not exist'
-          schema:
-            type: string
-      summary: Delete an Instrument
   /me/transactions:
     get:
       description: Returns all time transactions history
-      operationId: Get transactions history
       produces:
       - application/json
       responses:
@@ -412,7 +377,6 @@ paths:
       summary: Get transaction history
     post:
       description: Executes as transaction and returns it's full details
-      operationId: Execute transaction
       parameters:
       - description: Transaction to execute to insert
         in: body
@@ -431,7 +395,7 @@ paths:
           description: The transaction provided is illegal
           schema:
             type: string
-      summary: Execute transaction
+      summary: execute transaction
 securityDefinitions:
   JWT-Bearer:
     in: header

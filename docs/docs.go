@@ -38,7 +38,6 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Generate a jwt",
-                "operationId": "Get User",
                 "parameters": [
                     {
                         "description": "user's phone number and the received sms code",
@@ -58,19 +57,15 @@ var doc = `{
                         }
                     },
                     "401": {
-                        "description": "Invalid phone and code combination",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Invalid phone and code combination"
                     }
                 }
             }
         },
         "/auth/sms-code": {
             "post": {
-                "description": "Sends an sms to the specified phonenumber",
+                "description": "Sends an sms to the specified phoneNumber",
                 "summary": "SMS auth",
-                "operationId": "Get User",
                 "parameters": [
                     {
                         "description": "user's phone number",
@@ -78,29 +73,28 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dtos.PhoneNumberDto"
+                            "$ref": "#/definitions/handlers.phoneNumberDto"
                         }
                     }
                 ],
                 "responses": {
                     "200": {},
                     "400": {
-                        "description": "Something went wrong",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Invalid phone number"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
                     }
                 }
             }
         },
         "/me": {
             "get": {
-                "description": "Returns a list of the available instruments uploaded by the client",
+                "description": "Returns an account by its id",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get available Instruments",
-                "operationId": "Get Instruments",
+                "summary": "Get account details",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -109,16 +103,7 @@ var doc = `{
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": " \"no such user",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Unauthorized"
                     }
                 }
             },
@@ -128,7 +113,6 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Edit account information",
-                "operationId": "Edit account",
                 "parameters": [
                     {
                         "description": "Fields to edit",
@@ -142,22 +126,10 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Account"
-                        }
+                        "description": "OK"
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": " \"no such user",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Unauthorized"
                     }
                 }
             }
@@ -169,7 +141,6 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Get available Instruments",
-                "operationId": "Get Instruments",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -180,17 +151,8 @@ var doc = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Illegal token",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": " \"no such user",
-                        "schema": {
-                            "type": "string"
-                        }
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 }
             },
@@ -200,7 +162,6 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Insert instrument",
-                "operationId": "Insert instrument",
                 "parameters": [
                     {
                         "type": "integer",
@@ -220,65 +181,9 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Instrument"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "The id provided is illegal",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "id does not exist",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/me/instruments/{id}": {
-            "delete": {
-                "description": "Deletes one of the instruments available to the user",
-                "produces": [
-                    "text/plain"
-                ],
-                "summary": "Delete an Instrument",
-                "operationId": "Delete Instruments",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID of the instrument to delete",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Card deleted",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": " \"The id provided is illegal",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": " \"id does not exist",
-                        "schema": {
-                            "type": "string"
-                        }
+                    "200": {},
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 }
             }
@@ -290,7 +195,6 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Get transaction history",
-                "operationId": "Get transactions history",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -315,7 +219,6 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "execute transaction",
-                "operationId": "execute transaction",
                 "parameters": [
                     {
                         "description": "Transaction to execute to insert",
@@ -350,8 +253,10 @@ var doc = `{
             "required": [
                 "dni",
                 "email",
+                "id",
                 "lastName",
-                "name"
+                "name",
+                "phoneNumber"
             ],
             "properties": {
                 "dni": {
@@ -362,6 +267,15 @@ var doc = `{
                     "type": "string",
                     "example": "moni.argento@hotmail.com"
                 },
+                "id": {
+                    "type": "ID"
+                },
+                "instruments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.InstrumentDto"
+                    }
+                },
                 "lastName": {
                     "type": "string",
                     "example": "Potrelli de Argento"
@@ -369,6 +283,15 @@ var doc = `{
                 "name": {
                     "type": "string",
                     "example": "Mónica"
+                },
+                "phoneNumber": {
+                    "type": "PhoneNumber"
+                },
+                "prepaids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.PrepaidDto"
+                    }
                 }
             }
         },
@@ -432,19 +355,43 @@ var doc = `{
                 },
                 "phoneNumber": {
                     "type": "string",
-                    "example": "+5491133071114"
+                    "example": "005491133071114"
                 }
             }
         },
-        "dtos.PhoneNumberDto": {
+        "dtos.PrepaidDto": {
             "type": "object",
-            "required": [
-                "phoneNumber"
-            ],
             "properties": {
-                "phoneNumber": {
+                "QUILMES": {
                     "type": "string",
-                    "example": "+5491133071114"
+                    "example": "4200"
+                },
+                "availableDollar": {
+                    "type": "number",
+                    "example": 12.34
+                },
+                "availableDollarInAdvanced": {
+                    "type": "number",
+                    "example": 12.34
+                },
+                "availableLocal": {
+                    "type": "number",
+                    "example": 230.45
+                },
+                "availableLocalInAdvanced": {
+                    "type": "number",
+                    "example": 230.45
+                },
+                "creditDollar": {
+                    "type": "number",
+                    "example": -23.54
+                },
+                "creditLocal": {
+                    "type": "number",
+                    "example": -2850.63
+                },
+                "id": {
+                    "type": "string"
                 }
             }
         },
@@ -478,28 +425,28 @@ var doc = `{
                     "example": 1504.56
                 },
                 "destinationAccountId": {
-                    "type": "integer",
-                    "example": 3
+                    "type": "ID"
                 },
                 "instrumentId": {
-                    "type": "integer",
-                    "example": 5
+                    "type": "ID"
+                }
+            }
+        },
+        "handlers.phoneNumberDto": {
+            "type": "object",
+            "required": [
+                "phoneNumber"
+            ],
+            "properties": {
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "005491133071114"
                 }
             }
         },
         "models.Account": {
             "type": "object",
             "properties": {
-                "balance": {
-                    "type": "number",
-                    "example": 5430.54
-                },
-                "beneficiaries": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Beneficiary"
-                    }
-                },
                 "createdAt": {
                     "type": "string",
                     "example": "2020-07-07T11:38:09.157803072Z"
@@ -513,8 +460,7 @@ var doc = `{
                     "example": "moni.argento@hotmail.com"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 5
+                    "type": "string"
                 },
                 "instruments": {
                     "type": "array",
@@ -532,24 +478,19 @@ var doc = `{
                 },
                 "phoneNumber": {
                     "type": "string",
-                    "example": "+5491133071114"
-                }
-            }
-        },
-        "models.Beneficiary": {
-            "type": "object",
-            "properties": {
-                "accountId": {
-                    "type": "integer",
-                    "example": 8
+                    "example": "005491133071114"
                 },
-                "lastName": {
-                    "type": "string",
-                    "example": "Argento"
+                "prepaids": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Prepaid"
+                    }
                 },
-                "name": {
-                    "type": "string",
-                    "example": "Alfio Coqui"
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Transaction"
+                    }
                 }
             }
         },
@@ -557,8 +498,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "accountId": {
-                    "type": "integer",
-                    "example": 3
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string",
@@ -578,8 +518,7 @@ var doc = `{
                     "example": "José Pepe Argento"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string"
                 },
                 "issuer": {
                     "type": "string",
@@ -604,6 +543,18 @@ var doc = `{
                 }
             }
         },
+        "models.Prepaid": {
+            "type": "object",
+            "properties": {
+                "QUILMES": {
+                    "type": "string",
+                    "example": "4200"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Transaction": {
             "type": "object",
             "properties": {
@@ -616,20 +567,19 @@ var doc = `{
                     "example": "2020-07-07 13:36:15.738848+02:00"
                 },
                 "destinationAccountId": {
-                    "type": "integer",
-                    "example": 19
+                    "type": "string",
+                    "example": "19fdsasfads"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string"
                 },
                 "instrumentId": {
-                    "type": "integer",
-                    "example": 5
+                    "type": "string",
+                    "example": "asdfafasdfad5"
                 },
                 "originAccountId": {
-                    "type": "integer",
-                    "example": 3
+                    "type": "string",
+                    "example": "asdfasdfasdf3"
                 }
             }
         }

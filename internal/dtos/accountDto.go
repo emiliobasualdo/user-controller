@@ -2,6 +2,8 @@ package dtos
 
 import . "massimple.com/wallet-controller/internal/models"
 type AccountDto struct {
+	ID			ID				`json:"id" binding:"required"`
+	PhoneNumber PhoneNumber 	`json:"phoneNumber" binding:"required"`
 	Name        string        `json:"name" binding:"required" example:"Mónica"`
 	LastName    string        `json:"lastName" binding:"required" example:"Potrelli de Argento"`
 	DNI			string        `json:"dni" binding:"required" example:"21399433"`
@@ -26,6 +28,8 @@ func AccountDtoFromAccount(acc Account) AccountDto {
 	instruments := mapInstruments(acc.Instruments)
 	prepaids := mapPrepaids(acc.Prepaids)
 	return AccountDto{
+		ID:			acc.ID,
+		PhoneNumber: acc.PhoneNumber,
 		Name:     acc.Name,
 		LastName: acc.LastName,
 		DNI:      acc.DNI,

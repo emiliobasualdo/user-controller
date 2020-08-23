@@ -1,13 +1,11 @@
 package webapp
 
 import (
-	"github.com/apsdehal/go-logger"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	. "massimple.com/wallet-controller/internal/webapp/handlers"
 )
 
-var log *logger.Logger
 
 func Serve() {
 	if viper.GetBool("server.verbose") {
@@ -16,7 +14,6 @@ func Serve() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	// Creates a gin router with default middleware:
-	// logger and recovery (crash-free) middleware
 	router := gin.Default()
 	authMiddleware, err := AuthMiddleware()
 	if err != nil {
@@ -52,5 +49,4 @@ func Serve() {
 	if err := router.Run(":"+port); err != nil {
 		panic(err)
 	}
-	log.NoticeF("Server started on port %s", port)
 }

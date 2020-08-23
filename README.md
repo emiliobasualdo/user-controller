@@ -17,3 +17,12 @@ $ git clone git clone https://bitbucket.org/mas-simple/wallet-controller.git
 $ cd wallet controller
 $ go get ./...
 ```
+
+## JWT
+To generate a jwt HS256 secret key follow this steps:
+```
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
+cat public.pem
+```
+Then copy the public key between //// wrappers and paste it in the environment config file 

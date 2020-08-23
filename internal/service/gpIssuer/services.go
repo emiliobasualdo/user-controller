@@ -2,7 +2,6 @@ package gpIssuer
 
 import (
 	"fmt"
-	"massimple.com/wallet-controller/internal/dtos"
 	"massimple.com/wallet-controller/internal/models"
 	"time"
 )
@@ -10,7 +9,7 @@ import (
 ///////////////////////////////////////////////////////
 /// 			Implemented methods					///
 ///////////////////////////////////////////////////////
-func AltaDeCuenta(cuentaDto dtos.GpNewAccountInputDto) (dtos.GpNewAccountOutputDto, error){
+func AltaDeCuenta(cuentaDto models.GpNewAccountInput) (models.GpNewAccountOutput, error){
 	resp := respAltaDeCuenta{}
 	cuenta := cuentaDtoToDefaultCuenta(cuentaDto)
 	err := post(productBaseUrl + "/Cuentas", cuenta).execute(&resp)
@@ -18,7 +17,7 @@ func AltaDeCuenta(cuentaDto dtos.GpNewAccountInputDto) (dtos.GpNewAccountOutputD
 	return newAcc, err
 }
 
-func CargaDeTarjeta(cuentaId models.ID, recargaDto dtos.GpRechargeDto) error {
+func CargaDeTarjeta(cuentaId models.ID, recargaDto models.GpRecharge) error {
 	recarga := recargaDtoToDefaultRecarga(recargaDto)
 	err := post(fmt.Sprintf(productBaseUrl + "/Cuentas/%s/Transacciones/Cargas", cuentaId), recarga).execute(nil)
 	return err
@@ -43,7 +42,7 @@ func generarQueryDeFechas(mes int) string {
  *     mes=1 => mes anterior
  *     mes=12 => mes actual año anterior
  */
-func ConsultaDeMovimientos(cuentaId models.ID, mes int) (dtos.GPAccountMovementsDto, error){
+func ConsultaDeMovimientos(cuentaId models.ID, mes int) (models.GPAccountMovements, error){
 	resp := respConsultaDeMovimientos{}
 	query := generarQueryDeFechas(mes)
 	err := get(fmt.Sprintf(productBaseUrl + "/Cuentas/%s/Transacciones/Cargas?%s", cuentaId, query)).execute(&resp)
@@ -51,16 +50,16 @@ func ConsultaDeMovimientos(cuentaId models.ID, mes int) (dtos.GPAccountMovements
 	return movements, err
 }
 
-func ConsultaDeDisponileYSaldo(cuentaId models.ID) (dtos.GPAvailableDto, error) {
+func ConsultaDeDisponileYSaldo(cuentaId models.ID) (models.GPAvailable, error) {
 	disponible, err := consultaDeDisponible(cuentaId)
 	if err != nil {
-		return dtos.GPAvailableDto{}, err
+		return models.GPAvailable{}, err
 	}
 	saldo, err := consultaDeSaldo(cuentaId)
 	if err != nil {
-		return dtos.GPAvailableDto{}, err
+		return models.GPAvailable{}, err
 	}
-	return dtos.GPAvailableDto{
+	return models.GPAvailable{
 		LocalAvailableBuy:      disponible.DisponibleCompra,
 		LocalAvailableAdvance:  disponible.DisponibleAnticipo,
 		DollarAvailableBuy:     disponible.DisponibleCompraDolar,

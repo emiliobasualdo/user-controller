@@ -2,51 +2,46 @@ package persistence
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	. "massimple.com/wallet-controller/internal/models"
 )
 
 
-func GetAccountByPhoneNumberOrCreate(query Account) (Account, error) {
-	account, err := getByPhoneNumber(query.PhoneNumber)
+func GetAccountByPhoneNumberOrCreate(phoneNumber PhoneNumber, newID ID) (Account, error) {
+	account, err := getByPhoneNumber(phoneNumber)
 	if err == nil {
 		return account, nil
 	}
 	if err != mongo.ErrNoDocuments {
 		return Account{}, err
 	}
-	account = query
-	result , err := usersCollection.InsertOne(ctx, account)
+	account = Account{
+		ID: newID,
+		PhoneNumber: phoneNumber,
+	}
+	_, err = usersCollection.InsertOne(ctx, account)
 	if err != nil {
 		return account, err
 	} else {
-		id, _ := result.InsertedID.(primitive.ObjectID)
-		account.MongoID = id
-		return account, nil
+		return GetAccountById(newID)
 	}
 }
 
 func GetAccountById(id ID) (Account, error) {
 	var acc Account
-	_id, err := primitive.ObjectIDFromHex(id.String())
-	if err != nil {
-		return acc, err
-	}
-	single := usersCollection.FindOne(ctx, bson.M{"_id": _id})
+	single := usersCollection.FindOne(ctx, bson.M{"id": id.String()})
 	if single.Err() == mongo.ErrNoDocuments {
 		return Account{}, &NoSuchAccountError{Query: id.String()}
 	}
 	if err := single.Decode(&acc); err != nil{
 		return Account{}, err
 	}
-	acc.MongoID = _id
 	return acc, nil
 }
 
-func getByPhoneNumber(phoneNumber string) (Account, error) {
+func getByPhoneNumber(phoneNumber PhoneNumber) (Account, error) {
 	var acc Account
-	single := usersCollection.FindOne(ctx, Account{PhoneNumber: phoneNumber})
+	single := usersCollection.FindOne(ctx, bson.M{"phoneNumber": phoneNumber.String()})
 	if single.Err() == mongo.ErrNoDocuments {
 		return Account{}, single.Err()
 	}
@@ -57,11 +52,7 @@ func getByPhoneNumber(phoneNumber string) (Account, error) {
 }
 
 func ReplaceAccount(new Account) error {
-	_id, err := primitive.ObjectIDFromHex(new.ID.String())
-	if err != nil {
-		return err
-	}
-	single := usersCollection.FindOneAndReplace(ctx, bson.M{"_id": _id}, new)
+	single := usersCollection.FindOneAndReplace(ctx, bson.M{"id": new.ID.String()}, new)
 	if single.Err() == mongo.ErrNoDocuments {
 		return &NoSuchAccountError{Query: new.ID.String()}
 	}
@@ -83,8 +74,7 @@ func SaveTransaction(trans Transaction) error {
 	}
 	err = mongo.WithSession(ctx, session, func(sc mongo.SessionContext) error {
 		// Le insertamos la transacción a la cuenta
-		id, _ := primitive.ObjectIDFromHex(trans.OriginAccountId.String())
-		query := bson.M{"_id": id}
+		query := bson.M{"id": trans.OriginAccountId.String()}
 		update := bson.M{"$push": bson.M{TRANSACTIONS: trans}}
 		if _, err := usersCollection.UpdateOne(ctx, query, update); err != nil {
 			if err:= session.AbortTransaction(ctx); err != nil {

@@ -13,8 +13,7 @@ import (
 // @query Get Instruments
 // @Produce  json
 // @Success 200 {array} models.Instrument
-// @Failure 400 {object} string "Illegal token"
-// @Failure 404 {object} string "" "no such user"
+// @Failure 401 "Unauthorized"
 // @Router /me/instruments [get]
 func GetInstrumentsHandler(c *gin.Context) {
 	jwtUser, _ := c.Get(IdentityKey)
@@ -34,8 +33,7 @@ func GetInstrumentsHandler(c *gin.Context) {
 // @Param   id     path    uint     true    "ID of the user that requests the instruments"
 // @Param   instrument body  dtos.InstrumentDto  true "Instrument to insert"
 // @Success 200
-// @Failure 400 {object} string "The id provided is illegal"
-// @Failure 404 {object} string "id does not exist"
+// @Failure 401 "Unauthorized"
 // @Router /me/instruments [post]
 func InsertInstrumentsHandler(c *gin.Context) {
 	jwtUser, _ := c.Get(IdentityKey)

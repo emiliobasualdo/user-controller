@@ -1,14 +1,30 @@
 package service
 
 import (
+	"fmt"
+	guuid "github.com/google/uuid"
 	"massimple.com/wallet-controller/internal/dtos"
 	. "massimple.com/wallet-controller/internal/models"
 	"massimple.com/wallet-controller/internal/persistence"
+	"strings"
 )
 
-func GetAccount(phoneNumber string) (Account, error) {
-	acc := Account{PhoneNumber: phoneNumber}
-	return persistence.GetAccountByPhoneNumberOrCreate(acc)
+func GetAccount(phoneNumber PhoneNumber) (Account, error) {
+	// we parse the phone number
+	pnString := phoneNumber.String()
+	pnString = strings.ReplaceAll(pnString,"+", "00" )
+	pnString = strings.ReplaceAll(pnString,"-", "" )
+	pnString = strings.ReplaceAll(pnString," ", "" )
+	pnString = strings.ReplaceAll(pnString,"(", "" )
+	pnString = strings.ReplaceAll(pnString,")", "" )
+	// we generate an id if it is required by persistence
+	newID := generateId(PhoneNumber(pnString))
+	return persistence.GetAccountByPhoneNumberOrCreate(phoneNumber, newID)
+}
+
+func generateId(number PhoneNumber) ID {
+	idString := fmt.Sprintf("%s-%s", guuid.New(), number.String())
+	return ID(idString)
 }
 
 func GetAccountById(id ID) (Account, error) {
@@ -58,14 +74,6 @@ func ExecuteTransaction(originId ID, trans Transaction) error {
 	if err != nil {
 		return err
 	}
-	// origin is enabled
-	if !originAcc.Disabled {
-		return &DisabledAccountError{Message: "The origin account is disabled"}
-	}
-	// origin has enough balance
-	if originAcc.Balance < trans.Amount {
-		return &NotEnoughCreditError{}
-	}
 	// instrument exists & belongs & is enabled
 	oInstruments, err := GetEnabledInstrumentsByAccountId(originAcc.ID)
 	if err != nil {
@@ -85,10 +93,6 @@ func ExecuteTransaction(originId ID, trans Transaction) error {
 	destAcc, err := GetAccountById(trans.DestinationAccountId)
 	if err != nil {
 		return err
-	}
-	// destination is enabled
-	if !destAcc.Disabled {
-		return &DisabledAccountError{Message: "The destination account is disabled"}
 	}
 	// execute transaction
 	fullTransaction := Transaction{

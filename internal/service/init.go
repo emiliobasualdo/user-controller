@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/apsdehal/go-logger"
+	"massimple.com/wallet-controller/internal/service/gpIssuer"
 	"os"
 )
 
@@ -14,5 +15,5 @@ func Init() {
 		panic(err)
 	}
 	SMSInit()
-	//GPInit()
+	gpIssuer.GPInit()
 }

@@ -72,25 +72,31 @@ func insertAccount(acc models.Account) primitive.ObjectID{
 
 func TestGetAccountByPhoneNumberOrCreate_returnsExistent(t *testing.T) {
 	// SETUP
-	toReturn := "005491133071114"
+	numberExpected := models.PhoneNumber("005491133071114")
+	theIdExpected := models.ID(numberExpected.String())
 	accountExpected := models.Account{
+		ID:          theIdExpected,
 		Name:        "To be returned",
-		PhoneNumber: toReturn,
+		PhoneNumber: numberExpected,
 	}
 	insertAccount(accountExpected)
 	insertAccount(models.Account{
+		ID:          "Other ID",
 		Name:        "No to be returned",
 		PhoneNumber: "005491133333333",
 	})
 	//EXERCISE
-	acc, err := GetAccountByPhoneNumberOrCreate(accountExpected)
+	acc, err := GetAccountByPhoneNumberOrCreate(numberExpected, "")
 	// ASSERT
 	t.Run("Returns Existent", func(t *testing.T) {
 		if err != nil {
 			t.Errorf("got %s, want nil", err.Error())
 		}
-		if acc.PhoneNumber != toReturn {
-			t.Errorf("got %s, want %s", acc.PhoneNumber, toReturn)
+		if acc.PhoneNumber != numberExpected {
+			t.Errorf("got %s, want %s", acc.PhoneNumber, numberExpected)
+		}
+		if acc.ID != theIdExpected {
+			t.Errorf("got %s, want %s", acc.ID, theIdExpected)
 		}
 	})
 	t.Cleanup(cleanUp)
@@ -98,23 +104,23 @@ func TestGetAccountByPhoneNumberOrCreate_returnsExistent(t *testing.T) {
 
 func TestGetAccountByPhoneNumberOrCreate_creates(t *testing.T) {
 	// SETUP
-	toReturn := "005491133071114"
-	toCreate := models.Account{
-		Name:        "To be returned",
-		PhoneNumber: toReturn,
-	}
+	numberExpected := models.PhoneNumber("005491133071114")
+	idExpected := models.ID(numberExpected.String())
 	//EXERCISE
-	acc , err := GetAccountByPhoneNumberOrCreate(toCreate)
+	acc , err := GetAccountByPhoneNumberOrCreate(numberExpected, idExpected)
 	// ASSERT
 	t.Run("Creates a new acc", func(t *testing.T) {
 		if err != nil {
 			t.Errorf("got %s, want nil", err.Error())
 		}
-		if acc.PhoneNumber != toReturn {
-			t.Errorf("got %s, want %s", acc.PhoneNumber, toReturn)
+		if acc.PhoneNumber != numberExpected {
+			t.Errorf("got %s, want %s", acc.PhoneNumber, numberExpected)
 		}
 		if acc.MongoID.IsZero() {
 			t.Errorf("got %t, want %t", acc.MongoID.IsZero(), false)
+		}
+		if acc.ID != idExpected {
+			t.Errorf("got %s, want %s", acc.ID, idExpected)
 		}
 	})
 	t.Cleanup(cleanUp)
@@ -122,14 +128,20 @@ func TestGetAccountByPhoneNumberOrCreate_creates(t *testing.T) {
 
 func TestGetAccountById_returnsExistent(t *testing.T) {
 	// SETUP
-	accountExpected := models.Account{Name: "To be returned"}
+	expectedId := models.ID("asldfkjalsd")
+	accountExpected := models.Account{ID: expectedId, Name: "To be returned"}
 	mongoId := insertAccount(accountExpected).Hex()
 	//EXERCISE
-	acc, err := GetAccountById(models.ID(mongoId))
+	acc, err := GetAccountById(expectedId)
 	// ASSERT
 	t.Run("No error", func(t *testing.T) {
 		if err != nil {
 			t.Errorf("got %s, want nil", err.Error())
+		}
+	})
+	t.Run("Got what expected", func(t *testing.T) {
+		if acc.ID != expectedId {
+			t.Errorf("got %s, want %s", acc.ID, expectedId)
 		}
 	})
 	t.Run("Got what expected", func(t *testing.T) {
@@ -192,9 +204,11 @@ func TestReplaceAccount_returnsNoSuchAccountError(t *testing.T) {
 	t.Cleanup(cleanUp)
 }
 
-func TestGetAccountByPhoneNumberOrCreate_replaces(t *testing.T) {
+func TestReplaceAccount_replaces(t *testing.T) {
 	// SETUP
+	exptectedId := models.ID("lsdjfalsdk")
 	oldAcc := models.Account{
+		ID:			exptectedId,
 		Name:        "Name",
 		LastName:    "Lastname",
 		PhoneNumber: "005491133071114",
@@ -202,27 +216,30 @@ func TestGetAccountByPhoneNumberOrCreate_replaces(t *testing.T) {
 	mongoId := insertAccount(oldAcc)
 	now := time.Now()
 	replaceWith := models.Account{
-		ID: 		models.ID(mongoId.Hex()),
+		ID: 		exptectedId,
 		LastName:  "Other lastname",
 		CreatedAt: now,
 	}
 	//EXERCISE
 	err := ReplaceAccount(replaceWith)
 	newAcc := &models.Account{}
-	_=usersCollection.FindOne(ctx, bson.M{"_id": mongoId}).Decode(&newAcc)
+	_=usersCollection.FindOne(ctx, bson.M{"id": exptectedId}).Decode(&newAcc)
 	// ASSERT
 	t.Run("Replaces", func(t *testing.T) {
 		if err != nil {
 			t.Errorf("got %s, want nil", err.Error())
 		}
-		if newAcc.ID.String() != mongoId.Hex() {
-			t.Errorf("got %s, want %s", newAcc.ID, mongoId.Hex())
+		if newAcc.MongoID != mongoId {
+			t.Errorf("got %s, want %s", newAcc.MongoID, mongoId.Hex())
 		}
 		if newAcc.Name != "" {
 			t.Errorf("got %s, want %s", newAcc.Name, "")
 		}
 		if newAcc.LastName != "Other lastname" {
 			t.Errorf("got %s, want %s", newAcc.Name, "Other lastname")
+		}
+		if newAcc.ID != exptectedId {
+			t.Errorf("got %s, want %s", newAcc.ID, exptectedId)
 		}
 	})
 	t.Cleanup(cleanUp)

@@ -1,15 +1,16 @@
 # https://github.com/azer/go-makefile-example/blob/master/Makefile
 
 ## run: Runs application.go. ENV=DEV
+run: export ENV = DEV
 run:
-	ENV=DEV
+	@echo "  >  Simple go run"
 	go run application.go
 
-## watch: Auto-starts when code changes. ENV=DEV
+## watch: Auto-starts when code changes. ENV = DEV
+watch: export ENV = DEV
 watch:
-	ENV=DEV
-	@echo "  >  Dev watch mode. ¡Does NOT produce swagger documentation!"
-	reflex -sr '.*.go' -G 'docs/*'  sh scripts/updateDocAndRun.sh
+	@echo "  >  Dev watch mode. Produces swagger documentation and runs"
+	reflex -sr '.*.go' -G 'docs/*' $(MAKE) documentation $(MAKE) run
 
 ## install: Equivalent to go get
 install:
@@ -24,7 +25,7 @@ clean:
 ## documentation: Generates Swagger documentation
 documentation:
 	@echo "  >  Generating Swagger documentation"
-	swag init -g pkg/webapp/apiinfo.go
+	swag init -g internal/webapp/apiinfo.go
 
 ## test: Runs test. ENV=TEST
 test:

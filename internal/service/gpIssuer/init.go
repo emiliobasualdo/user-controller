@@ -3,6 +3,7 @@ package gpIssuer
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/apsdehal/go-logger"
 	"github.com/spf13/viper"
 	"net/http"
 	"net/url"
@@ -24,11 +25,23 @@ var api = struct {
 var productBaseUrl string
 
 var client *http.Client
+var log *logger.Logger
 func GPInit() {
+	log, _ = logger.New("Gp issuer", 1, os.Stdout)
+	log.Info("Connecting to Gp Issuer")
 	// gp demands static ip for communication.
 	// we hosted a proxy for dev
 	// todo api debería ser agnóstica de su ip
-	if value, _ := os.LookupEnv("ENV"); value != "PROD" {
+	if env, _ := os.LookupEnv("ENV"); env != "PROD" {
+		// todo api debería ser agnóstica a horario de servicios
+		// gp UAT is only available between 8am and 10pm utc-3 monday thru friday
+		t := time.Now().In(time.FixedZone("Argentina Time", int((-3 * time.Hour).Seconds())))
+		hour := t.Hour()
+		day := t.Weekday()
+		if  day < time.Monday || day > time.Friday || hour < 8 || hour > 10 {
+			log.Warning("Gp is only available between 8am and 10pm in weekdays. So... we are not connected ")
+			return
+		}
 		if !viper.IsSet("httpProxy.url") {
 			panic("Proxy is not set")
 		}
@@ -87,4 +100,5 @@ func getToken() {
 	auth.AccessToken 	= authData.AccessToken
 	auth.TokenType 		= authData.TokenType
 	auth.ExpiresAt		= time.Now().Add(time.Duration(authData.Expires) * time.Second)
+	log.Info("Gp Issuer connected successfully")
 }

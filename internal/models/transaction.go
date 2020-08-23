@@ -2,12 +2,14 @@ package models
 
 import "time"
 
+
 type Transaction struct {
-	ID            			string	`json:"id" gorm:"primary_key" example:"1asdfasdf"`
-	Amount					float64	`json:"amount" gorm:"not null" example:"1504.56"`
-	InstrumentId 			ID	`json:"instrumentId" gorm:"not null" example:"asdfafasdfad5"`
-	OriginAccountId			ID 	`json:"originAccountId" gorm:"not null" example:"asdfasdfasdf3"`
-	DestinationAccountId	ID 	`json:"destinationAccountId" gorm:"not null" example:"19fdsasfads"`
+
+	ID            			ID	`json:"id" `
+	Amount					float64	`json:"amount" example:"1504.56"`
+	InstrumentId 			ID	`json:"instrumentId"  example:"asdfafasdfad5"`
+	OriginAccountId			ID 	`json:"originAccountId" example:"asdfasdfasdf3"`
+	DestinationAccountId	ID 	`json:"destinationAccountId"  example:"19fdsasfads"`
 	CreatedAt     			time.Time	`json:"createdAt" example:"2020-07-07 13:36:15.738848+02:00"`
 }
 

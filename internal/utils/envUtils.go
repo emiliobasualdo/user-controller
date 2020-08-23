@@ -13,7 +13,7 @@ func EnvInit(env string) {
 	// set defaults
 	viper.SetConfigName("config-default")
 	viper.AddConfigPath("./../../")		// search locally in this directory
-	viper.AddConfigPath("./../../../")		// search locally in this directory
+	viper.AddConfigPath("./../../../")	// search locally in this directory
 	viper.AddConfigPath(".")		// search locally in this directory
 	viper.AddConfigPath("$HOME")  	// when deployed search in this directory
 	err := viper.ReadInConfig() 		// Find and read the config file

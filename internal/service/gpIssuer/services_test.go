@@ -1,7 +1,6 @@
 package gpIssuer
 
 import (
-	"massimple.com/wallet-controller/internal/dtos"
 	"massimple.com/wallet-controller/internal/models"
 	"massimple.com/wallet-controller/internal/utils"
 	"math/rand"
@@ -11,7 +10,7 @@ import (
 	"time"
 )
 
-var baseAccount dtos.GpNewAccountInputDto
+var baseAccount models.GpNewAccountInput
 var id string
 const emptyLegalAccount = "33436918"
 func setup() {
@@ -22,7 +21,7 @@ func setup() {
 	// we generate an account to use as test
 	rand.Seed(time.Now().UnixNano())
 	id = strconv.Itoa(20000000 + rand.Intn(30000000))
-	baseAccount = dtos.GpNewAccountInputDto{
+	baseAccount = models.GpNewAccountInput{
 		Name:           "Emilio",
 		Lastname:       "Basualdo Cibils",
 		DocumentNumber: id,
@@ -55,7 +54,7 @@ func TestAltaDeCuenta_creates(t *testing.T) {
 
 func TestCargaDeTarjeta_returnsNoSuchAccount(t *testing.T) {
 	// SETUP
-	carga := dtos.GpRechargeDto{
+	carga := models.GpRecharge{
 		Amount: 100,
 	}
 	// EXERCISE
@@ -70,7 +69,7 @@ func TestCargaDeTarjeta_returnsNoSuchAccount(t *testing.T) {
 
 func TestCargaDeTarjeta_returnsOk(t *testing.T) {
 	// SETUP
-	carga := dtos.GpRechargeDto{
+	carga := models.GpRecharge{
 		Amount: 100,
 	}
 	// EXERCISE

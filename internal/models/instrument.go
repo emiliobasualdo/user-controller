@@ -6,9 +6,9 @@ import (
 )
 
 type Instrument struct {
-	ID              ID      		`json:"id" gorm:"primary_key" example:"1"`
-	MongoID     	primitive.ObjectID 	`json:"-" bson:"_id,omitempty" example:"5adf87asdfa7s8df6a9"`
-	AccountID       string      		`json:"accountId" example:"3"`
+	ID              ID      		`json:"id"`
+	MongoID     	primitive.ObjectID 	`json:"-" bson:"_id,omitempty"`
+	AccountID       ID      		`json:"accountId" `
 	Holder          string    			`json:"holder" example:"José Pepe Argento"`
 	LastFourNumbers string    			`json:"lastFourNumbers" example:"4930"`
 	ValidThru       string    			`json:"validThru" example:"11/24"`
@@ -20,7 +20,7 @@ type Instrument struct {
 }
 
 type InstrumentBuilder interface {
-	FromAccount(string)	InstrumentBuilder
+	FromAccount(ID)		InstrumentBuilder
 	Holder(string)    		InstrumentBuilder
 	LastFourNumbers(string) InstrumentBuilder
 	ValidThru(string) 		InstrumentBuilder
@@ -31,7 +31,7 @@ type InstrumentBuilder interface {
 }
 
 type iBuilder struct {
-	account			string
+	account			ID
 	holder    		string
 	lastFourNumbers string
 	validThru 		string
@@ -40,7 +40,7 @@ type iBuilder struct {
 	creditType 		string
 }
 
-func (ib *iBuilder) FromAccount(acc string) InstrumentBuilder {
+func (ib *iBuilder) FromAccount(acc ID) InstrumentBuilder {
 	ib.account = acc
 	return ib
 }

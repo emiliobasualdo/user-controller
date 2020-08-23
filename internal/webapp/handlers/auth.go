@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	. "massimple.com/wallet-controller/internal/dtos"
 	"massimple.com/wallet-controller/internal/models"
 	"massimple.com/wallet-controller/internal/service"
@@ -13,19 +14,22 @@ import (
 )
 
 const IdentityKey = "acc_id"
-const Realm = "text-realm" // todo change based on env
 
 type JwtUser struct {
-	ID  models.ID
-	Disabled bool
-}
-
-type JwtUserInterface interface {
-	getId()	string
+	ID  string
 }
 
 func (jw JwtUser) getId() models.ID {
+	return models.ID(jw.ID)
+}
+
+func (jw JwtUser) getIdString() string {
 	return jw.ID
+}
+
+type JwtUserInterface interface {
+	getId()	models.ID
+	getIdString() string
 }
 
 func AuthMiddlewareWrapper() gin.HandlerFunc {
@@ -46,16 +50,22 @@ func AuthMiddlewareWrapper() gin.HandlerFunc {
 // @Produce  json
 // @Param   login body  dtos.LoginDto true "user's phone number and the received sms code"
 // @Success 200 {object} dtos.TokenDto
-// @Failure 401 {object} string "Invalid phone and code combination"
+// @Failure 401 "Invalid phone and code combination"
 // @Router /auth/login [post]
 //https://github.com/appleboy/gin-jwt
 func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
+	jwtPrivate := viper.GetString("jwt.privateKeyFile")
+	jwtPublic := viper.GetString("jwt.publicKeyFile")
+	jwtRealm  := viper.GetString("jwt.realm")
+	jwtSigningAlgorithm := viper.GetString("jwt.signingAlgorithm")
 	return jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       Realm,
-		Key:         []byte("asdfasdfasdfasfdasecret key"), // todo env
-		Timeout:     time.Until(time.Now().AddDate(1,0,0)),
-		MaxRefresh:  time.Until(time.Now().AddDate(1,1,0)),
-		IdentityKey: IdentityKey,
+		SigningAlgorithm: 	jwtSigningAlgorithm,
+		PrivKeyFile: 		jwtPrivate,
+		PubKeyFile: 		jwtPublic,
+		Realm:       		jwtRealm,
+		Timeout:     		time.Until(time.Now().AddDate(1,0,0)),
+		MaxRefresh:	 		time.Until(time.Now().AddDate(1,1,0)),
+		IdentityKey: 		IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(JwtUser); ok {
 				return jwt.MapClaims{
@@ -67,7 +77,7 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &JwtUser{
-				ID: claims[IdentityKey].(models.ID),
+				ID: claims[IdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -78,7 +88,7 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 			return getJwtAccount(login.PhoneNumber, login.Code)
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*JwtUser); ok && !v.Disabled {
+			if _, ok := data.(*JwtUser); ok {
 				return true
 			}
 			return false
@@ -110,7 +120,7 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error){
 	})
 }
 
-func getJwtAccount(phoneNumber string, code string) (interface{}, error) {
+func getJwtAccount(phoneNumber models.PhoneNumber, code string) (interface{}, error) {
 	verified, err := service.CheckCode(phoneNumber, code)
 	if !verified {
 		return nil, errors.New("invalid code")
@@ -122,24 +132,30 @@ func getJwtAccount(phoneNumber string, code string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return JwtUser{ID: acc.ID, Disabled: !acc.Disabled}, nil
+	return JwtUser{ID: acc.ID.String()}, nil
 }
 
+type phoneNumberDto struct {
+	PhoneNumber models.PhoneNumber `json:"phoneNumber" binding:"required" example:"005491133071114"`
+}
+
+
 // @Summary SMS auth
-// @Description Sends an sms to the specified phonenumber
+// @Description Sends an sms to the specified phoneNumber
 // @query Get User
-// @Param   login body  dtos.PhoneNumberDto true "user's phone number"
+// @Param   login body  handlers.phoneNumberDto true "user's phone number"
 // @Success 200
-// @Failure 400 {object} string "Something went wrong"
+// @Failure 400 "Invalid phone number"
+// @Failure 500 "Something went wrong"
 // @Router /auth/sms-code [post]
 //https://github.com/appleboy/gin-jwt
 func SendSmsHandler(c *gin.Context)  {
-	var phoneNumber PhoneNumberDto
-	if err := c.BindJSON(&phoneNumber); err != nil {
+	var dto phoneNumberDto
+	if err := c.BindJSON(&dto); err != nil {
 		Respond(c, http.StatusBadRequest, "You must provide a phone number", nil)
 		return
 	}
-	if err := service.SendSmsCode(phoneNumber.PhoneNumber); err != nil {
+	if err := service.SendSmsCode(dto.PhoneNumber); err != nil {
 		Respond(c, http.StatusBadRequest, nil, err)
 		return
 	}

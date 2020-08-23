@@ -3,28 +3,34 @@ package service
 import (
 	"context"
 	"github.com/kevinburke/twilio-go"
+	"github.com/spf13/viper"
+	"massimple.com/wallet-controller/internal/models"
 	"net/url"
+	"os"
 )
 
 
-const AccountSid = "AC3a76c0b4bd8624d06ac96b8f6b96f40f" // todo pasar a dev
-const AuthToken = "9f226bfa3b8225f8669ba83bab7406dc"
-const VerifyServiceId = "VA28a6c2e09395cf1782d9decfe213b8c5"
-const FromSms = "+14068135125"
-const FromWapp = "+14155238886"
+var accountSid string
+var authToken string
+var verifyServiceId string
 
 var twilioClient *twilio.Client
 
 func SMSInit(){
-	twilioClient = twilio.NewClient(AccountSid, AuthToken, nil)
-	log.Info("Sms provider connected")
+	log.Info("Connecting to Sms")
+	accountSid 		= viper.GetString("smsProvider.accountSid")
+	authToken 		= viper.GetString("smsProvider.authToken")
+	verifyServiceId = viper.GetString("smsProvider.verifyServiceId")
+	twilioClient = twilio.NewClient(accountSid, authToken, nil)
+	log.Info("Sms provider connected successfully")
 }
 
-func SendSmsCode(to string) error {
-	if to == "+5491100000000" {
+func SendSmsCode(to models.PhoneNumber) error {
+	env, _ := os.LookupEnv("ENV")
+	if env == "DEV" && to == "005491100000000" {
 		return nil
 	}
-	_, err := sendSms(to)
+	_, err := sendSms(to.String())
 	return err
 }
 
@@ -34,24 +40,27 @@ func sendSms(to string) (*twilio.VerifyPhoneNumber, error) {
 	v.Set("To", to)
 	v.Set("Channel", "sms")
 	v.Set("Locale", "es")
-	return twilioClient.Verify.Verifications.Create(context.Background(), VerifyServiceId, v)
+	return twilioClient.Verify.Verifications.Create(context.Background(), verifyServiceId, v)
 }
 
-func CheckCode(phoneNumber string, code string) (bool, error) {
-	if code == "000000" {
-		return false, nil
+func CheckCode(phoneNumber models.PhoneNumber, code string) (bool, error) {
+	env, _ := os.LookupEnv("ENV")
+	if env == "DEV" {
+		if code == "000000" {
+			return false, nil
+		}
+		if code == "111111" {
+			return true, nil
+		}
 	}
-	if code == "111111" {
-		return true, nil
-	}
-	return checkCode(phoneNumber, code)
+	return checkCode(phoneNumber.String(), code)
 }
 
 func checkCode(number string, code string) (bool, error) {
 	v := url.Values{}
 	v.Set("To", number)
 	v.Set("Code", code)
-	resp, err := twilioClient.Verify.Verifications.Check(context.Background(), VerifyServiceId, v)
+	resp, err := twilioClient.Verify.Verifications.Check(context.Background(), verifyServiceId, v)
 	if err != nil {
 		return false, err
 	}

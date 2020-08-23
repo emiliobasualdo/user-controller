@@ -3,7 +3,6 @@ package gpIssuer
 import (
 	"encoding/json"
 	"fmt"
-	"massimple.com/wallet-controller/internal/dtos"
 	"massimple.com/wallet-controller/internal/models"
 	"reflect"
 	"strconv"
@@ -372,7 +371,7 @@ var tipoDocumento = struct {
 	otros: "Otros",
 }
 
-func cuentaDtoToDefaultCuenta(dto dtos.GpNewAccountInputDto) cuentaGp {
+func cuentaDtoToDefaultCuenta(dto models.GpNewAccountInput) cuentaGp {
 	return cuentaGp{
 		TipoProducto: api.productNumber,
 		Nombre:       dto.Name,
@@ -398,19 +397,19 @@ func cuentaDtoToDefaultCuenta(dto dtos.GpNewAccountInputDto) cuentaGp {
 	}
 }
 
-func cuentaToNewAccountDto(cuenta respAltaDeCuenta) dtos.GpNewAccountOutputDto {
+func cuentaToNewAccountDto(cuenta respAltaDeCuenta) models.GpNewAccountOutput {
 	cards := gpTarjetasToCardsDto(cuenta.Tarjetas)
-	return dtos.GpNewAccountOutputDto{
-		ID:         dtos.IDGP(cuenta.IdCuenta),
+	return models.GpNewAccountOutput{
+		ID:         models.IDGP(cuenta.IdCuenta),
 		ExternalId: cuenta.IdCuentaExterna,
 		Cards:      cards,
 	}
 }
 
-func gpTarjetasToCardsDto(tarjetas []tarjeta) []dtos.GPCardDto {
-	var cards []dtos.GPCardDto
+func gpTarjetasToCardsDto(tarjetas []tarjeta) []models.GPCard {
+	var cards []models.GPCard
 	for _, c := range tarjetas {
-		cards = append(cards, dtos.GPCardDto{
+		cards = append(cards, models.GPCard{
 			CardNumber: c.NumeroTarjeta,
 			Cvc:        c.Cvc,
 		})
@@ -418,7 +417,7 @@ func gpTarjetasToCardsDto(tarjetas []tarjeta) []dtos.GPCardDto {
 	return cards
 }
 
-func recargaDtoToDefaultRecarga(dto dtos.GpRechargeDto) recarga {
+func recargaDtoToDefaultRecarga(dto models.GpRecharge) recarga {
 	return recarga{
 		Importe:     importeIn{
 			Monto:  dto.Amount,
@@ -432,11 +431,11 @@ func recargaDtoToDefaultRecarga(dto dtos.GpRechargeDto) recarga {
 	}
 }
 
-func consultaDeMovimientosToAccountMovementsDto(resp respConsultaDeMovimientos) dtos.GPAccountMovementsDto {
-	var movements []dtos.GpMovementDto
+func consultaDeMovimientosToAccountMovementsDto(resp respConsultaDeMovimientos) models.GPAccountMovements {
+	var movements []models.GpMovement
 	for _, m := range resp.Resultado {
-		movements = append(movements, dtos.GpMovementDto{
-			ID:           dtos.IDGP(m.ID),
+		movements = append(movements, models.GpMovement{
+			ID:           models.IDGP(m.ID),
 			Type:         m.Tipo,
 			Date:         time.Time(m.Fecha),
 			Description:  m.Descripcion,
@@ -444,7 +443,7 @@ func consultaDeMovimientosToAccountMovementsDto(resp respConsultaDeMovimientos) 
 			Observations: m.Observaciones,
 		})
 	}
-	return dtos.GPAccountMovementsDto{
+	return models.GPAccountMovements{
 		Amount:      resp.Cantidad,
 		DateFrom:    time.Time(resp.FechaDesde),
 		DateTo:      time.Time(resp.FechaHasta),

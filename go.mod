@@ -12,6 +12,7 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/google/uuid v1.1.1
 	github.com/inconshreveable/log15 v0.0.0-20200109203555-b30bc20e4fd1 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kevinburke/go-types v0.0.0-20200309064045-f2d4aea18a7a // indirect

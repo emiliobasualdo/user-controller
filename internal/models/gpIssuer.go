@@ -1,53 +1,53 @@
-package dtos
+package models
 
 import (
-	"massimple.com/wallet-controller/internal/models"
 	"time"
 )
+
 type IDGP int
 
-type GpNewAccountInputDto struct {
+type GpNewAccountInput struct {
 	Name           string
 	Lastname       string
 	DocumentNumber string
 	BirthDate      string
 	Cellphone      string
-	ExternalId     models.ID
+	ExternalId     ID
 }
 
-type GpRechargeDto struct {
+type GpRecharge struct {
 	Amount      float64
 }
 
-type GpNewAccountOutputDto struct {
+type GpNewAccountOutput struct {
 	ID         IDGP
-	ExternalId models.ID
-	Cards      []GPCardDto
+	ExternalId ID
+	Cards      []GPCard
 }
 
-type GPCardDto struct {
+type GPCard struct {
 	CardNumber  string
 	Cvc         string
 }
 
-type GPAccountMovementsDto struct {
+type GPAccountMovements struct {
 	Amount int
 	DateFrom time.Time
 	DateTo	time.Time
 	TotalAmount int
-	Movements []GpMovementDto
+	Movements []GpMovement
 }
 
-type GpMovementDto struct {
-	ID 				IDGP
-	Type 			int
-	Date 			time.Time
-	Description	 	string
-	Amount 			float64
-	Observations 	string
+type GpMovement struct {
+	ID           IDGP
+	Type         int
+	Date         time.Time
+	Description  string
+	Amount       float64
+	Observations string
 }
 
-type GPAvailableDto struct {
+type GPAvailable struct {
 	LocalAvailableBuy		float64
 	LocalAvailableAdvance	float64
 	DollarAvailableBuy   	float64
