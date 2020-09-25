@@ -1,6 +1,10 @@
 FROM golang:1.14.3
-RUN mkdir /app 
 
+ARG ENV
+ENV ENV=$ENV
+RUN echo $ENV
+
+RUN mkdir /app
 # Set the Current Working Directory inside the container
 WORKDIR /app
 

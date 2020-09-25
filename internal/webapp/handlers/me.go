@@ -47,3 +47,20 @@ func EditMeHandler(c *gin.Context)  {
 	}
 	Respond(c, http.StatusOK, nil, nil)
 }
+
+// @Summary Home information
+// @Description Returns a summary of the account
+// @query Account summary
+// @Produce  json
+// @Success 200 {object} models.Account
+// @Failure 401 "Unauthorized"
+// @Router /me/home [get]
+func HomeHandler(c *gin.Context)  {
+	user, _ := c.Get(IdentityKey)
+	summary, err := service.GetSummary(user.(*JwtUser).getId())
+	if err != nil {
+		Respond(c, http.StatusUnauthorized, nil, err)
+		return
+	}
+	Respond(c, http.StatusOK, summary, nil)
+}

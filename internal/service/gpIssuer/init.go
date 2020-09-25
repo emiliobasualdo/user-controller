@@ -28,17 +28,22 @@ var client *http.Client
 var log *logger.Logger
 func GPInit() {
 	log, _ = logger.New("Gp issuer", 1, os.Stdout)
+	if connect, _ := os.LookupEnv("GP_CONNECTION"); connect == "FALSE" {
+		log.Warning("NOT connecting Gp Issuer")
+		return
+	}
 	log.Info("Connecting to Gp Issuer")
 	// gp demands static ip for communication.
 	// we hosted a proxy for dev
 	// todo api debería ser agnóstica de su ip
-	if env, _ := os.LookupEnv("ENV"); env != "PROD" {
+	env, _ := os.LookupEnv("ENV")
+	if env != "PROD" {
 		// todo api debería ser agnóstica a horario de servicios
 		// gp UAT is only available between 8am and 10pm utc-3 monday thru friday
 		t := time.Now().In(time.FixedZone("Argentina Time", int((-3 * time.Hour).Seconds())))
 		hour := t.Hour()
 		day := t.Weekday()
-		if  day < time.Monday || day > time.Friday || hour < 8 || hour > 10 {
+		if  day < time.Monday || day > time.Friday || hour < 8 || hour > 22 {
 			log.Warning("Gp is only available between 8am and 10pm in weekdays. So... we are not connected ")
 			return
 		}

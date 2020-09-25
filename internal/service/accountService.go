@@ -7,6 +7,7 @@ import (
 	. "massimple.com/wallet-controller/internal/models"
 	"massimple.com/wallet-controller/internal/persistence"
 	"strings"
+	"time"
 )
 
 func GetAccount(phoneNumber PhoneNumber) (Account, error) {
@@ -19,7 +20,7 @@ func GetAccount(phoneNumber PhoneNumber) (Account, error) {
 	pnString = strings.ReplaceAll(pnString,")", "" )
 	// we generate an id if it is required by persistence
 	newID := generateId(PhoneNumber(pnString))
-	return persistence.GetAccountByPhoneNumberOrCreate(phoneNumber, newID)
+	return persistence.GetAccountByPhoneNumberOrCreate(PhoneNumber(pnString), newID)
 }
 
 func generateId(number PhoneNumber) ID {
@@ -110,5 +111,41 @@ func GetTransactions(accId ID) ([]Transaction, error) {
 		return []Transaction{}, err
 	}
 	return acc.Transactions, nil
+}
+
+func GetSummary(accId ID) (Summary, error) {
+	sc := []SliderCard{{
+		Image: "www.s3.com/image1",
+		Title: "Cargá tu tarjeta",
+		Action: "redirect_screen?screenId=recharge",
+	},{
+		Image: "www.s3.com/image2",
+		Title: "Descuentos Quilmes",
+		Action: "redirect_screen?screenId=discount1",
+	}}
+	lm := []Movement{{
+		Amount: 2580,
+		Type: "OUT",
+		Action: "consumo",
+		Date: time.Now().AddDate(0,0, -4),
+		Extra: "+ $56 ahorro",
+		Commerce: "Comercio Quilmes",
+		Link: "http://www.google.com",
+		StatusText: "Transacción confirmada",
+	},
+	{
+		Amount: 750,
+		Type: "IN",
+		Action: "carga",
+		Date: time.Now().AddDate(0,0, -5),
+		Extra: "+ $24 ahorro",
+		Commerce: "visa",
+		StatusText: "Transacción confirmada",
+	}}
+	return Summary{
+		Balance:       3053.12,
+		SliderCards:   sc,
+		LastMovements: lm,
+	}, nil
 }
 

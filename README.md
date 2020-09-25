@@ -26,3 +26,13 @@ openssl rsa -in private.pem -pubout -out public.pem
 cat public.pem
 ```
 Then copy the public key between //// wrappers and paste it in the environment config file 
+
+## Gerneate go code from swagger.yaml
+Install  swagger-codegen
+```
+brew install swagger-codegen
+```
+Generate the code
+```
+swagger-codegen generate -i path/to/swagger.json.yaml -l go -o /out/dir/
+```

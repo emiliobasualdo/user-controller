@@ -31,6 +31,7 @@ func Serve() {
 	{
 		me.GET("", MeHandler)
 		me.POST("", EditMeHandler)
+		me.GET("/home", HomeHandler)
 		instruments := me.Group("/instruments")
 		{
 			instruments.GET("", GetInstrumentsHandler)

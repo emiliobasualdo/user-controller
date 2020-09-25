@@ -33,9 +33,7 @@ test:
 ## docker [ENV]: Builds docker image and runs the application in port 5000. Must specify ENV
 docker:
 	@echo "  >  Building Docker image and hosting application on port 5000"
-	ENV=$(env)
-	go clean
-	docker build --build-arg var_name=${ENV} --tag user-controller:latest .
+	docker build --build-arg ENV=$(ENV) --tag user-controller:latest .
 	docker run --publish 5000:5000 user-controller:latest
 
 .PHONY: help

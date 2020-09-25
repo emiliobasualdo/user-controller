@@ -48,7 +48,6 @@ func Init() {
 	}
 	dbName := viper.GetString("database.dbName")
 	db = client.Database(dbName)
-	log.Info("DB connected successfully")
 	// We create the collections
 	for _, collection := range collections {
 		if err := db.CreateCollection(ctx, collection.Name); err != nil {
@@ -58,4 +57,5 @@ func Init() {
 		}
 		*(collection.reference) = db.Collection(collection.Name)
 	}
+	log.Info("DB connected successfully")
 }
