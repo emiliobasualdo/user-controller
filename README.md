@@ -45,5 +45,5 @@ Run `make help`
 docker pull mongo:4.0.4
 docker run -d -p 27017-27019:27017-27019 --name mongodb mongo:4.0.4
 docker build -t user-controller .
-docker run --publish 5000:5000 --env ENV=DEV,DBURL="mongodb://host.docker.internal:27017" user-controller
+docker run --publish 5000:5000 --env ENV=DEV --env DBURL="mongodb://host.docker.internal:27017" user-controller
 ```
