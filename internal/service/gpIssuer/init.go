@@ -28,10 +28,8 @@ var client *http.Client
 var log *logger.Logger
 func GPInit() {
 	log, _ = logger.New("Gp issuer", 1, os.Stdout)
-	if connect, _ := os.LookupEnv("GP_CONNECTION"); connect == "FALSE" {
-		log.Warning("NOT connecting Gp Issuer")
-		return
-	}
+	log.Warning("NOT connecting Gp Issuer")
+	return
 	log.Info("Connecting to Gp Issuer")
 	// gp demands static ip for communication.
 	// we hosted a proxy for dev

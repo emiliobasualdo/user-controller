@@ -27,9 +27,6 @@ func EnvInit(env string) {
 	} else if env == "DEV" {
 		log.Info("Running in DEV mode")
 		viper.SetConfigName("config-dev")
-	} else if env == "DEV_DOCKER"{
-		log.Info("Running in DEV mode")
-		viper.SetConfigName("config-dev-docker")
 	} else if env == "TEST" {
 		log.Info("Running in TEST mode")
 		viper.SetConfigName("config-test")
@@ -38,5 +35,9 @@ func EnvInit(env string) {
 	}
 	if err := viper.MergeInConfig(); err != nil {
 		panic(err)
+	}
+	if dbUrl, exists := os.LookupEnv("DBURL"); exists {
+		log.WarningF("The db url is replaced with %s", dbUrl)
+		viper.Set("database.connectionUri", dbUrl)
 	}
 }

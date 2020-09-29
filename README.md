@@ -36,3 +36,14 @@ Generate the code
 ```
 swagger-codegen generate -i path/to/swagger.json.yaml -l go -o /out/dir/
 ```
+
+# Development
+Run `make help`
+
+# Docker
+```
+docker pull mongo:4.0.4
+docker run -d -p 27017-27019:27017-27019 --name mongodb mongo:4.0.4
+docker build -t user-controller .
+docker run --publish 5000:5000 --env ENV=DEV,DBURL="mongodb://host.docker.internal:27017" user-controller
+```

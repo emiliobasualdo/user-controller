@@ -114,13 +114,18 @@ func GetTransactions(accId ID) ([]Transaction, error) {
 }
 
 func GetSummary(accId ID) (Summary, error) {
+	img := "https://lh3.googleusercontent.com/proxy/QKwsdZH9SqVk-lsh7NplqVnfDiSuZ32bnUUAObdc8pfxyrdFPcarJp_W4Vp4RQmhNO_anSdAtisO8nOA3hMWtJKsjIpT5Z6EK_pZKHypASyw2iFHPQlBbyaUuIQSIQW7qBNfewpVxoMRD6LABqcfKKU4tGjN18NWqxykfXr_tg"
 	sc := []SliderCard{{
-		Image: "www.s3.com/image1",
+		Image: img,
 		Title: "Cargá tu tarjeta",
 		Action: "redirect_screen?screenId=recharge",
 	},{
-		Image: "www.s3.com/image2",
+		Image: img,
 		Title: "Descuentos Quilmes",
+		Action: "redirect_screen?screenId=discount1",
+	},{
+		Image: img,
+		Title: "Pagá servicios",
 		Action: "redirect_screen?screenId=discount1",
 	}}
 	lm := []Movement{{
@@ -134,7 +139,36 @@ func GetSummary(accId ID) (Summary, error) {
 		StatusText: "Transacción confirmada",
 	},
 	{
-		Amount: 750,
+		Amount: 750.30,
+		Type: "IN",
+		Action: "carga",
+		Date: time.Now().AddDate(0,0, -5),
+		Extra: "+ $24 ahorro",
+		Commerce: "visa",
+		StatusText: "Transacción confirmada",
+	},
+	{
+		Amount: 500,
+		Type: "OUT",
+		Action: "consumo",
+		Date: time.Now().AddDate(0,0, -6),
+		Extra: "+ $56 ahorro",
+		Commerce: "Comercio Quilmes",
+		Link: "http://www.google.com",
+		StatusText: "Transacción confirmada",
+	},
+	{
+		Amount: 390.50,
+		Type: "OUT",
+		Action: "consumo",
+		Date: time.Now().AddDate(0,0, -4),
+		Extra: "+ $56 ahorro",
+		Commerce: "Comercio Quilmes",
+		Link: "http://www.google.com",
+		StatusText: "Transacción confirmada",
+	},
+	{
+		Amount: 7500,
 		Type: "IN",
 		Action: "carga",
 		Date: time.Now().AddDate(0,0, -5),
@@ -142,8 +176,16 @@ func GetSummary(accId ID) (Summary, error) {
 		Commerce: "visa",
 		StatusText: "Transacción confirmada",
 	}}
+	balance := 0.0
+	for _, mov := range lm {
+		if mov.Type == "IN" {
+			balance += mov.Amount
+		} else {
+			balance -= mov.Amount
+		}
+	}
 	return Summary{
-		Balance:       3053.12,
+		Balance:       balance,
 		SliderCards:   sc,
 		LastMovements: lm,
 	}, nil
